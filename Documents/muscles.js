@@ -340,15 +340,17 @@ function displayExercise() {
     </div>`;
   }
   
-  // 3. Stats (Big Bold Text)
+
+  // 3. Name
+  exerciseContent += `<div class="exercise-name">${output.exercise}</div>`;
+
+  // 4. Stats (Big Bold Text)
   let multiplierStr = output.type === 'time' ? 'SEC' : 'REPS';
   exerciseContent += `<div class="exercise-stats">
     <span class="exercise-meta">${output.reps}</span>
     <span class="multiplier">${multiplierStr}</span>
   </div>`;
 
-  // 4. Name
-  exerciseContent += `<div class="exercise-name">${output.exercise}</div>`;
 
   // 5. Description
   if (output.description) {
