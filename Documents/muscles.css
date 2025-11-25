@@ -10,9 +10,9 @@
     --accent-glow: rgba(255, 255, 255, 0.1);
     
     /* --- Functional Colors --- */
-    --btn-complete: #2F2F2F;      /* Dark grey button */
+    --btn-complete: #6366f1;      /* Indigo button */
     --btn-complete-text: #FFFFFF;
-    --btn-complete-hover: #404040;
+    --btn-complete-hover: #4f46e5;
 
     --btn-action: #000000;        /* Black button */
     --btn-action-text: #888888;
@@ -195,8 +195,10 @@ body.loaded {
 }
 
 .action-button {
-    width: 100%;
-    padding: 16px;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
     border-radius: 12px;
     font-family: var(--font-stack);
     font-size: 1rem;
@@ -211,7 +213,7 @@ body.loaded {
 .complete-button {
     background: var(--btn-complete);
     color: var(--btn-complete-text);
-    border: 1px solid #444;
+    border: none
 }
 
 .complete-button:hover {
