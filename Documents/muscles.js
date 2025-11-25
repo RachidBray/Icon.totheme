@@ -186,17 +186,13 @@ function renderUI() {
         </div>
     `;
 
-    // 4. Buttons
+    // 4. Buttons (Only Complete)
     actions.innerHTML = `
         <button id="btn-complete" class="btn btn-complete">✓ Complete</button>
-        <button id="btn-postpone" class="btn btn-postpone">⏰ Postpone</button>
-        <button id="btn-skip" class="btn btn-skip">⏭ Skip</button>
     `;
 
-    // 5. Listeners
+    // 5. Listener (Only Complete)
     document.getElementById('btn-complete').addEventListener('click', handleComplete);
-    document.getElementById('btn-postpone').addEventListener('click', handlePostpone);
-    document.getElementById('btn-skip').addEventListener('click', handleSkip);
 }
 
 // --- 4. ACTION HANDLERS ---
@@ -211,18 +207,7 @@ function handleComplete() {
     StorageManager.save(state);
 
     // 3. Refresh UI immediately (User sees next exercise)
-    // We do NOT close the window. The App handles that.
     renderUI();
-}
-
-function handlePostpone() {
-    // No index change. No save needed. No window close.
-    StorageManager.log("Postponed. Waiting for App to close...");
-}
-
-function handleSkip() {
-    // Same as postpone per requirements.
-    StorageManager.log("Skipped. Waiting for App to close...");
 }
 
 // --- 5. CATALOG EDITOR (Minimal) ---
