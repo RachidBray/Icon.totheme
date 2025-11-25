@@ -1,4 +1,3 @@
-
 // grab our dom elements
 let displayBox = document.querySelector('.current-exercise'),
     catalogBox = document.querySelector('.catalog-box'),
@@ -320,14 +319,31 @@ function completeCurrentExercise() {
   if (currentExerciseIndex >= keys.length) currentExerciseIndex = 0;
   
   saveState();
-  // Simply update UI, let App handle window closing via its own triggers
-  displayExercise();
+  // Fade out current content
+  const currentContent = document.querySelector('.exercise-content');
+  if (currentContent) {
+    currentContent.style.opacity = '0';
+    setTimeout(() => {
+      displayExercise();
+      // Fade in new content
+      setTimeout(() => {
+        const newContent = document.querySelector('.exercise-content');
+        if (newContent) newContent.style.opacity = '1';
+      }, 10);
+    }, 300);
+  } else {
+    displayExercise();
+    setTimeout(() => {
+      const newContent = document.querySelector('.exercise-content');
+      if (newContent) newContent.style.opacity = '1';
+    }, 10);
+  }
 }
 
 function displayExercise() {
   getCurrentExercise();
   
-  let exerciseContent = '';
+  let exerciseContent = '<div class="exercise-content">';
   
   // 1. Progress
   let keys = Object.keys(localCatalog);
@@ -339,6 +355,7 @@ function displayExercise() {
       <img src="${output.image}" alt="${output.exercise}">
     </div>`;
   }
+  
 
   // 3. Name
   exerciseContent += `<div class="exercise-name">${output.exercise}</div>`;
@@ -350,10 +367,13 @@ function displayExercise() {
     <span class="multiplier">${multiplierStr}</span>
   </div>`;
 
+
   // 5. Description
   if (output.description) {
     exerciseContent += `<div class="exercise-description">${output.description}</div>`;
   }
+  
+  exerciseContent += '</div>';
   
   // 6. Buttons - Clean Structure, Classes Only
   exerciseContent += `
@@ -375,6 +395,8 @@ function addActionButtonListeners() {
     const newBtn = completeBtn.cloneNode(true); 
     completeBtn.parentNode.replaceChild(newBtn, completeBtn);
     newBtn.addEventListener('click', function() {
+      newBtn.innerHTML = '<div class="spinner"></div>';
+      newBtn.disabled = true;
       completeCurrentExercise(); 
     });
   }
@@ -384,6 +406,10 @@ function addActionButtonListeners() {
 loadState(); 
 validateCatalog(); 
 displayExercise();
+setTimeout(() => {
+  const content = document.querySelector('.exercise-content');
+  if (content) content.style.opacity = '1';
+}, 10);
 displayCatalog();
 
 // Add 'loaded' class
