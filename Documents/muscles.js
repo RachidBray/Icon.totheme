@@ -93,97 +93,265 @@ let localCatalog = {...catalog};
 let currentExerciseIndex = 0;
 let exerciseCompleted = {};
 
-// Robust storage helper
+// Robust storage helper with multiple fallbacks for better persistence
 const AppStorage = {
-  key: 'muscle-break-state',
+  dbName: 'TimeoutMuscleDB',
+  storeName: 'state',
+  key: 'muscleState',
   
-  save: function(data) {
-    const value = JSON.stringify(data);
-    let saved = false;
-    
-    // Try localStorage
+  save: async function(data) {
+    // Try IndexedDB first
     try {
-      localStorage.setItem(this.key, value);
-      saved = true;
-    } catch (e) {}
-
-    // Try cookie
-    try {
-      const date = new Date();
-      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
-      document.cookie = `${this.key}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/`;
-      saved = true;
-    } catch (e) {}
-    
-    updateDebugDisplay(saved ? 'Saved' : 'Save Failed');
-    return saved;
-  },
-  
-  load: function() {
-    let data = null;
-    let source = 'None';
-
-    try {
-      const fromLocal = localStorage.getItem(this.key);
-      if (fromLocal) {
-        data = JSON.parse(fromLocal);
-        source = 'LS';
-      }
-    } catch (e) {}
-    
-    if (!data) {
-      try {
-        const nameEQ = this.key + "=";
-        const ca = document.cookie.split(';');
-        for(let i=0;i < ca.length;i++) {
-          let c = ca[i];
-          while (c.charAt(0)==' ') c = c.substring(1,c.length);
-          if (c.indexOf(nameEQ) == 0) {
-            data = JSON.parse(decodeURIComponent(c.substring(nameEQ.length,c.length)));
-            source = 'Cookie';
-            break;
-          }
-        }
-      } catch (e) {}
+      const idbSuccess = await this.saveIndexedDB(data);
+      if (idbSuccess) return true;
+    } catch (e) {
+      console.warn('IndexedDB save failed:', e);
     }
     
-    updateDebugDisplay(data ? `${source}` : 'No Data');
-    return data;
+    // Fallback to localStorage
+    try {
+      localStorage.setItem(this.key, JSON.stringify(data));
+      updateDebugDisplay('Save: localStorage');
+      return true;
+    } catch (e) {
+      console.warn('localStorage save failed:', e);
+    }
+    
+    // Fallback to sessionStorage
+    try {
+      sessionStorage.setItem(this.key, JSON.stringify(data));
+      updateDebugDisplay('Save: sessionStorage');
+      return true;
+    } catch (e) {
+      console.warn('sessionStorage save failed:', e);
+    }
+    
+    // Fallback to cookies
+    try {
+      this.saveCookie(data);
+      updateDebugDisplay('Save: Cookie');
+      return true;
+    } catch (e) {
+      console.warn('Cookie save failed:', e);
+    }
+    
+    // Fallback to URL hash
+    try {
+      this.saveHash(data);
+      updateDebugDisplay('Save: Hash');
+      return true;
+    } catch (e) {
+      console.warn('Hash save failed:', e);
+    }
+    
+    updateDebugDisplay('Save: All Failed');
+    return false;
+  },
+  
+  load: async function() {
+    // Try IndexedDB first
+    try {
+      const idbData = await this.loadIndexedDB();
+      if (idbData) {
+        updateDebugDisplay('Load: IDB');
+        return idbData;
+      }
+    } catch (e) {
+      console.warn('IndexedDB load failed:', e);
+    }
+    
+    // Fallback to localStorage
+    try {
+      const lsData = localStorage.getItem(this.key);
+      if (lsData) {
+        updateDebugDisplay('Load: localStorage');
+        return JSON.parse(lsData);
+      }
+    } catch (e) {
+      console.warn('localStorage load failed:', e);
+    }
+    
+    // Fallback to sessionStorage
+    try {
+      const ssData = sessionStorage.getItem(this.key);
+      if (ssData) {
+        updateDebugDisplay('Load: sessionStorage');
+        return JSON.parse(ssData);
+      }
+    } catch (e) {
+      console.warn('sessionStorage load failed:', e);
+    }
+    
+    // Fallback to cookies
+    try {
+      const cookieData = this.loadCookie();
+      if (cookieData) {
+        updateDebugDisplay('Load: Cookie');
+        return cookieData;
+      }
+    } catch (e) {
+      console.warn('Cookie load failed:', e);
+    }
+    
+    // Fallback to URL hash
+    try {
+      const hashData = this.loadHash();
+      if (hashData) {
+        updateDebugDisplay('Load: Hash');
+        return hashData;
+      }
+    } catch (e) {
+      console.warn('Hash load failed:', e);
+    }
+    
+    updateDebugDisplay('Load: No Data');
+    return null;
+  },
+  
+  saveIndexedDB: function(data) {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.dbName, 1);
+      
+      request.onerror = () => reject(request.error);
+      
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction([this.storeName], 'readwrite');
+        const store = transaction.objectStore(this.storeName);
+        const putRequest = store.put(data, this.key);
+        
+        putRequest.onsuccess = () => resolve(true);
+        putRequest.onerror = () => resolve(false);
+      };
+      
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(this.storeName)) {
+          db.createObjectStore(this.storeName);
+        }
+      };
+    });
+  },
+  
+  loadIndexedDB: function() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.dbName, 1);
+      
+      request.onerror = () => reject(request.error);
+      
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction([this.storeName], 'readonly');
+        const store = transaction.objectStore(this.storeName);
+        const getRequest = store.get(this.key);
+        
+        getRequest.onsuccess = () => resolve(getRequest.result || null);
+        getRequest.onerror = () => resolve(null);
+      };
+      
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(this.storeName)) {
+          db.createObjectStore(this.storeName);
+        }
+      };
+    });
+  },
+  
+  saveCookie: function(data) {
+    const json = JSON.stringify(data);
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1); // Expire in 1 year
+    document.cookie = `${this.key}=${encodeURIComponent(json)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+  },
+  
+  loadCookie: function() {
+    const name = this.key + '=';
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookies = decodedCookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.indexOf(name) === 0) {
+        const json = cookie.substring(name.length);
+        try {
+          return JSON.parse(json);
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+    return null;
+  },
+  
+  saveHash: function(data) {
+    const json = JSON.stringify(data);
+    const encoded = btoa(encodeURIComponent(json)); // Base64 encode to make it URL-safe
+    window.location.hash = encoded;
+  },
+  
+  loadHash: function() {
+    const hash = window.location.hash.substring(1); // Remove #
+    if (!hash) return null;
+    try {
+      const decoded = decodeURIComponent(atob(hash));
+      return JSON.parse(decoded);
+    } catch (e) {
+      return null;
+    }
   }
 };
 
 function updateDebugDisplay(status) {
   let debugEl = document.getElementById('debug-status');
   if (debugEl) {
-    debugEl.textContent = `Idx: ${currentExerciseIndex}`;
+    // Show both status and the current index for debugging
+    debugEl.textContent = `${status} | Idx: ${currentExerciseIndex}`;
   }
 }
 
-function loadState() {
+async function loadState() {
   try {
-    const state = AppStorage.load();
-    if (state) {
-      currentExerciseIndex = parseInt(state.currentIndex);
-      if (isNaN(currentExerciseIndex)) currentExerciseIndex = 0;
+    const loadedState = await AppStorage.load();
+    if (loadedState) {
+      const state = loadedState;
+      
+      let loadedIndex = parseInt(state.currentIndex);
+      if (isNaN(loadedIndex)) loadedIndex = 0;
+      
+      currentExerciseIndex = loadedIndex;
       exerciseCompleted = state.completed || {};
+      
       if (state.catalog) localCatalog = { ...state.catalog };
       
       const keys = Object.keys(localCatalog).sort();
-      if (currentExerciseIndex >= keys.length) currentExerciseIndex = 0;
+      
+      // Ensure the loaded index is valid within the current catalog size
+      if (currentExerciseIndex >= keys.length) {
+          currentExerciseIndex = 0;
+      }
+      
+      updateDebugDisplay(`Load: IDB`);
+    } else {
+        // This runs if AppStorage.load() returns null
+        updateDebugDisplay('Load: Reset to 0 (No Data)');
+        currentExerciseIndex = 0;
+        exerciseCompleted = {};
     }
   } catch (e) {
+    // Fallback to initial values on error
     currentExerciseIndex = 0;
     exerciseCompleted = {};
+    updateDebugDisplay('Load: FAILED (Reset)');
   }
 }
 
-function saveState() {
+async function saveState() {
   const state = {
     currentIndex: currentExerciseIndex,
     completed: exerciseCompleted,
     catalog: localCatalog
   };
-  AppStorage.save(state);
+  await AppStorage.save(state);
 }
 
 // Validation
@@ -300,6 +468,7 @@ function getCurrentExercise() {
   validateCatalog();
   validateCurrentExercise();
   const keys = Object.keys(localCatalog).sort();
+  // Double-check index wrap-around just before fetching
   if (currentExerciseIndex >= keys.length) currentExerciseIndex = 0;
   
   const prop = keys[currentExerciseIndex];
@@ -308,6 +477,8 @@ function getCurrentExercise() {
   output.type = localCatalog[prop].type || 'reps';
   output.description = localCatalog[prop].description || '';
   output.image = localCatalog[prop].image || '';
+  
+  updateDebugDisplay(`Displaying`); // Update debug with current index
 }
 
 function completeCurrentExercise() {
@@ -316,9 +487,11 @@ function completeCurrentExercise() {
   
   exerciseCompleted[currentKey] = true;
   currentExerciseIndex++;
+  // Increment index, then wrap around if necessary
   if (currentExerciseIndex >= keys.length) currentExerciseIndex = 0;
   
-  saveState();
+  saveState(); // Saves the NEXT index
+  
   // Fade out current content
   const currentContent = document.querySelector('.exercise-content');
   if (currentContent) {
@@ -392,6 +565,7 @@ function addActionButtonListeners() {
   const completeBtn = document.getElementById('complete-btn');
 
   if (completeBtn) {
+    // Clone and replace is a good way to remove old listeners
     const newBtn = completeBtn.cloneNode(true); 
     completeBtn.parentNode.replaceChild(newBtn, completeBtn);
     newBtn.addEventListener('click', function() {
@@ -403,14 +577,24 @@ function addActionButtonListeners() {
 }
 
 // Init
-loadState(); 
-validateCatalog(); 
-displayExercise();
-setTimeout(() => {
-  const content = document.querySelector('.exercise-content');
-  if (content) content.style.opacity = '1';
-}, 10);
-displayCatalog();
+async function init() {
+  // 1. Load state FIRST, before any other logic.
+  await loadState(); 
+  // 2. Validate catalog size and index
+  validateCatalog(); 
+  // 3. Display the exercise based on the loaded index
+  displayExercise();
+  // 4. Fade in content
+  setTimeout(() => {
+    const content = document.querySelector('.exercise-content');
+    if (content) content.style.opacity = '1';
+  }, 10);
+  // 5. Build catalog for settings popup
+  displayCatalog();
+}
+
+// Call init
+init();
 
 // Add 'loaded' class
 window.onload = function(e) {
