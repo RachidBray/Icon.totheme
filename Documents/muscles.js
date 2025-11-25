@@ -1,325 +1,257 @@
-// grab our dom elements
-let displayBox = document.querySelector('.current-exercise'),
-    catalogBox = document.querySelector('.catalog-box'),
-    resetButton = document.querySelector('.reset');
+/**
+ * MUSCLE BREAK APP - FINAL LOGIC
+ * Behavior: Persistence + Deterministic Order.
+ * Window Management: Handled by external App (No window.close() calls).
+ */
 
-// Hide catalog box by default (will show as popup)
-catalogBox.style.display = 'none';
+// --- 1. CONFIGURATION & DATA ---
 
-// Add a settings button to trigger the popup
-let settingsButton = document.createElement('button');
-settingsButton.innerHTML = '⚙️';
-settingsButton.className = 'settings-button';
-settingsButton.title = 'Customize Exercises';
-document.querySelector('.cell').appendChild(settingsButton);
+const defaultCatalog = {
+  ex01: { name: 'Neck Circles & Tilts', reps: 5, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex02: { name: 'Shoulder Circles & Shrugs', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex03: { name: 'Arm Circles', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex04: { name: 'Torso Rotations', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex05: { name: 'Hip Circles', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex06: { name: 'Knee Circles', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex07: { name: 'Ankle Circles', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex08: { name: 'Camel Cat', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex09: { name: "World's Greatest Stretch", reps: 5, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex10: { name: 'Leg Swings (forward/back)', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex11: { name: 'Leg Swings (lateral)', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex12: { name: 'Walking Lunges with Rotation', reps: 8, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex13: { name: 'Walking Quad Pulls', reps: 8, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex14: { name: 'Walking Hamstring Reaches', reps: 8, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex15: { name: 'Hip Openers', reps: 8, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex16: { name: 'Inchworms', reps: 5, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex17: { name: 'Banded Monster Walks', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex18: { name: 'Single-leg Balance', reps: 30, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex19: { name: 'Short Foot Exercise', reps: 1, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex20: { name: 'Big Toe Dissociation', reps: 1, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex21: { name: 'Heel-toe Walks', reps: 15, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex22: { name: '90/90 Hip Rotations', reps: 2, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex23: { name: 'Clamshells', reps: 1, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex24: { name: 'Hip CAR (controlled articular rotation)', reps: 5, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex25: { name: 'Glute Bridge', reps: 15, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex26: { name: 'Standing Calf Raises', reps: 30, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex27: { name: 'Hip Flexor Stretch', reps: 1, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex28: { name: 'Barbell Back Squat', reps: 0, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex29: { name: 'Plank forearm', reps: 30, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex30: { name: 'Side Plank (each side)', reps: 30, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex31: { name: 'copenhagen side plank', reps: 30, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex32: { name: 'Bulgarian Split Squat', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex33: { name: 'Romanian Deadlift', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex34: { name: 'hamstrings curl', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex35: { name: 'Wall Sit', reps: 40, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex36: { name: 'Pull-ups (or Band-Assisted)', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex37: { name: 'Push-ups (or Bench Press)', reps: 15, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex38: { name: 'Squat Jumps', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex39: { name: 'Single-Leg Deadlift (DL)', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex40: { name: 'Banded Ankle Dorsiflexion Mobilisation', reps: 1, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex41: { name: 'Lunges (Backward, Forward)', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex42: { name: 'Step-Ups', reps: 15, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex43: { name: 'Jumping Lunges', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex44: { name: 'Single Leg Hops', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex45: { name: 'Dead Bug', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex46: { name: 'Bird Dog', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex47: { name: 'Romanian Deadlifts', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex48: { name: 'Sidelying Hip Abduction (against wall)', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex49: { name: 'Standing Fire Hydrant', reps: 15, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex50: { name: 'Lateral Step-Downs', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex51: { name: 'reactive neuromuscular training (RNT) with band', reps: 15, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex52: { name: 'dips', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex53: { name: 'Lateral lunges', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex54: { name: 'one arm rows', reps: 12, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex55: { name: 'Figure 4 stretch', reps: 30, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex56: { name: 'Heal raise Walking', reps: 1, type: 'time', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex57: { name: 'Hip airplanes', reps: 6, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
+  ex58: { name: 'Psoas Stretch', reps: 6, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' }
+};
 
-// Add event listener to show/hide the catalog box
-settingsButton.addEventListener('click', function() {
-    if (catalogBox.style.display === 'none') {
-        catalogBox.style.display = 'flex';
-        catalogBox.style.position = 'absolute';
-        catalogBox.style.top = '50%';
-        catalogBox.style.left = '50%';
-        catalogBox.style.transform = 'translate(-50%, -50%)';
-        catalogBox.style.zIndex = '100';
-        catalogBox.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
-        catalogBox.style.padding = '20px';
-        catalogBox.style.borderRadius = '10px';
-    } else {
-        catalogBox.style.display = 'none';
+// Global State
+let state = {
+    currentIndex: 0,
+    catalog: { ...defaultCatalog }
+};
+
+// --- 2. STORAGE MANAGER (Persistence Logic) ---
+// Tries LocalStorage first, falls back to Cookies.
+
+const StorageManager = {
+    KEY: 'muscle_break_v2_data',
+
+    save: function(dataObj) {
+        const jsonString = JSON.stringify(dataObj);
+        let status = [];
+
+        // Method 1: LocalStorage
+        try {
+            localStorage.setItem(this.KEY, jsonString);
+            status.push("LS: OK");
+        } catch (e) {
+            status.push("LS: Fail");
+        }
+
+        // Method 2: Cookies (Backup)
+        try {
+            const date = new Date();
+            date.setTime(date.getTime() + (365*24*60*60*1000));
+            document.cookie = `${this.KEY}=${encodeURIComponent(jsonString)}; expires=${date.toUTCString()}; path=/`;
+            status.push("Cookie: OK");
+        } catch (e) {
+            status.push("Cookie: Fail");
+        }
+
+        this.log(`Saved (Index ${dataObj.currentIndex}) | ${status.join(', ')}`);
+    },
+
+    load: function() {
+        let loadedData = null;
+        let source = "";
+
+        // Try LocalStorage
+        try {
+            const lsData = localStorage.getItem(this.KEY);
+            if (lsData) {
+                loadedData = JSON.parse(lsData);
+                source = "LS";
+            }
+        } catch(e) {}
+
+        // Try Cookies
+        if (!loadedData) {
+            try {
+                const nameEQ = this.KEY + "=";
+                const ca = document.cookie.split(';');
+                for(let i=0;i < ca.length;i++) {
+                    let c = ca[i];
+                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                    if (c.indexOf(nameEQ) == 0) {
+                        loadedData = JSON.parse(decodeURIComponent(c.substring(nameEQ.length,c.length)));
+                        source = "Cookie";
+                        break;
+                    }
+                }
+            } catch(e) {}
+        }
+
+        if (loadedData) {
+            this.log(`Loaded Index: ${loadedData.currentIndex} (${source})`);
+            return loadedData;
+        } else {
+            this.log(`No saved data. Starting Index 0.`);
+            return null;
+        }
+    },
+
+    log: function(msg) {
+        console.log(msg);
+        const bar = document.getElementById('debug-bar');
+        if (bar) bar.textContent = msg;
     }
-});
-
-// Define a default set of exercises
-let catalog = {
-  ex01: { name: 'Standing Glute Squeeze', reps: 10, type: 'reps', description: 'Stand tall, feet hip-width apart., Squeeze your glutes hard for 3 seconds, then relax.' },
-  ex02: { name: 'Leg Swings', reps: 10, type: 'reps', description: '10 forward/back & 10 side-to-side per leg' },
-  ex03: { name: 'Standing Back Extensions', reps: 10, type: 'reps', description: 'lace your hands on your lower back. Gently arch backward.' },
-  ex04: { name: 'Hip CARs', reps: 3, type: 'reps', description: 'Slowly move your knee in a circle: up, out, around, and back – Each side' },
-  ex05: { name: 'Walking Lunge', reps: 30, type: 'time', description: 'Jump while raising arms and separating legs to sides' },
-  ex06: { name: 'Plank', reps: 30, type: 'time', description: 'Hold a push-up position with your body in a straight line' },
-  ex07: { name: 'Wall Sit', reps: 45, type: 'time', description: 'Lean against wall with back flat, knees at 90 degrees' },
-  ex08: { name: 'Standing Hip Flexor Stretch', reps: 30, type: 'time', description: 'Step one leg back into a gentle lunge – Each side' },
-  ex09: { name: 'Cat Camel', reps: 7, type: 'reps', description: 'Move through 7–8 slow cycles of arching and rounding the back on all fours.' },
-  ex10: { name: 'Psoas Stretch', reps: 6, type: 'reps', description: 'Perform 6 strides while engaging the hip flexors – focus on elongating the rear leg.' },
-  ex11: { name: 'Hip Airplanes', reps: 3, type: 'reps', description: 'Balance on one leg, open and close the hip like airplane wings – 3 sets of 3 reps each side.' },
-  ex12: { name: 'Spine Hygiene Stretch', reps: 20, type: 'time', description: 'Perform after prolonged sitting: gentle forward folds or thoracic extension stretches.' },
-    ex13: { name: 'Calf Neural Mobilisation', reps: 60, type: 'time', description: 'Sit on the floor with one leg extended or use band.' },
-    ex14: { name: 'Richard Simmons', reps: 60, type: 'time', description: 'Mark Green' },
 };
 
-// This is the working catalog that will be used
-let localCatalog = {...catalog};
+// --- 3. APP LOGIC ---
 
-// Initialize the current exercise index and use a randomized approach
-let currentExerciseIndex = -1; // Start with -1 so first call picks index 0
-let exerciseIndices = []; // Will store shuffled indices
-let isFirstLoad = true; // Track the very first load
-
-// Generate a random but complete sequence of exercises
-function shuffleExercises() {
-  // Get all exercise keys
-  const keys = Object.keys(localCatalog).sort();
-  
-  // Create an array of indices and shuffle them
-  exerciseIndices = [];
-  for (let i = 0; i < keys.length; i++) {
-    exerciseIndices.push(i);
-  }
-  
-  // Fisher-Yates shuffle
-  for (let i = exerciseIndices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [exerciseIndices[i], exerciseIndices[j]] = [exerciseIndices[j], exerciseIndices[i]];
-  }
-  
-  // Reset index to start of new sequence
-  currentExerciseIndex = 0;
-}
-
-// This is what will be read for the final output to display
-let output = {
-  exercise: 0,
-  reps: 0,
-  type: 'reps',
-  description: ''
-};
-
-// Click the 💪 to reset to defaults
-resetButton.addEventListener('click', resetRefresh);
-
-function resetRefresh() {
-  // Reset to default catalog
-  localCatalog = {...catalog};
-  
-  // Generate new shuffle
-  shuffleExercises();
-  
-  // Display the results
-  displayExercise();
-  displayCatalog();
-}
-
-// Save changes upon each 'input' event in the catalog
-catalogBox.addEventListener('keyup', function (event) {
-  // Don't allow 'return' key to create new-lines
-  if (event.keyCode === 13) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-  
-  // Grab the data-item names for elements being currently edited
-  let focusedParentName = event.target.parentElement.getAttribute('data-item');
-  let focusedChildName = event.target.getAttribute('data-item');
-
-  // Update relevant datum within the catalog with user input/changes
-  localCatalog[focusedParentName][focusedChildName] = event.target.textContent;
-}, false);
-
-// Create HTML elements for each exercise + reps based on data
-function displayCatalog() {
-  // Get current list of <dl> exercises
-  let catalogChildren = document.querySelectorAll('dl');
-  // Remove existing children to start fresh
-  if (catalogChildren) {
-    catalogChildren.forEach(function(child) {
-      catalogBox.removeChild(child);
-    });
-  }
-
-  // Add close button to the catalog box
-  let closeButton = document.createElement('button');
-  closeButton.innerHTML = '✕';
-  closeButton.className = 'close-button';
-  closeButton.style.position = 'absolute';
-  closeButton.style.top = '10px';
-  closeButton.style.right = '10px';
-  closeButton.style.border = 'none';
-  closeButton.style.background = 'transparent';
-  closeButton.style.fontSize = '1.2em';
-  closeButton.style.cursor = 'pointer';
-  closeButton.addEventListener('click', function() {
-    catalogBox.style.display = 'none';
-  });
-  catalogBox.appendChild(closeButton);
-
-  for (var item in localCatalog) {
-    if (typeof localCatalog[item] !== 'function') {
-      let exerciseSet = document.createElement('dl'),
-        nameBox = document.createElement('dt'),
-        repsBox = document.createElement('dd'),
-        typeBox = document.createElement('dd'),
-        descBox = document.createElement('dd');
-
-      exerciseSet.setAttribute('data-item', item);
-
-      nameBox.contentEditable = true;
-      repsBox.contentEditable = true;
-      typeBox.contentEditable = true;
-      descBox.contentEditable = true;
-
-      nameBox.setAttribute('data-item', 'name');
-      repsBox.setAttribute('data-item', 'reps');
-      typeBox.setAttribute('data-item', 'type');
-      descBox.setAttribute('data-item', 'description');
-
-      nameBox.textContent = localCatalog[item].name;
-      repsBox.textContent = localCatalog[item].reps;
-      typeBox.textContent = localCatalog[item].type || 'reps';
-      descBox.textContent = localCatalog[item].description || 'Add description here';
-      
-      // Style the boxes
-      nameBox.style.width = '70%';
-      repsBox.style.width = '15%';
-      typeBox.style.width = '15%';
-      descBox.style.width = '100%';
-      descBox.style.background = 'rgba(150, 150, 150, 0.5)';
-      descBox.style.fontSize = '0.8em';
-      descBox.style.padding = '5px';
-      descBox.style.boxSizing = 'border-box';
-      
-      // Style the type box to distinguish it
-      typeBox.style.background = 'rgba(30, 170, 241, 0.7)';
-
-      exerciseSet.appendChild(nameBox);
-      exerciseSet.appendChild(repsBox);
-      exerciseSet.appendChild(typeBox);
-      exerciseSet.appendChild(descBox);
-
-      catalogBox.appendChild(exerciseSet);
+function init() {
+    const loaded = StorageManager.load();
+    if (loaded) {
+        state = loaded;
+        const keys = Object.keys(state.catalog);
+        if (state.currentIndex >= keys.length) state.currentIndex = 0;
     }
-  }
-  
-  // Add a new exercise button
-  let addButton = document.createElement('button');
-  addButton.innerHTML = '+ Add Exercise';
-  addButton.className = 'add-button';
-  addButton.style.width = '100%';
-  addButton.style.padding = '10px';
-  addButton.style.margin = '10px 0';
-  addButton.style.backgroundColor = 'var(--current-exercise)';
-  addButton.style.border = 'none';
-  addButton.style.borderRadius = '5px';
-  addButton.style.cursor = 'pointer';
-  
-  addButton.addEventListener('click', function() {
-    // Find the highest ex number
-    let keys = Object.keys(localCatalog);
-    let highestNum = 0;
+    renderUI();
+    document.body.classList.add('loaded');
+}
+
+function renderUI() {
+    // 1. Get current exercise
+    const keys = Object.keys(state.catalog).sort(); 
+    const currentKey = keys[state.currentIndex];
+    const exercise = state.catalog[currentKey];
+
+    // 2. DOM Elements
+    const container = document.querySelector('.current-exercise');
+    const actions = document.getElementById('action-container');
+
+    // 3. Build HTML
+    const multiplier = exercise.type === 'time' ? 'sec' : '×';
     
-    keys.forEach(key => {
-      let num = parseInt(key.replace('ex', ''));
-      if (num > highestNum) highestNum = num;
+    container.innerHTML = `
+        <img src="${exercise.image}" class="exercise-img" alt="Exercise">
+        <div class="exercise-text">
+            ${exercise.reps} <span class="multiplier">${multiplier}</span> ${exercise.name}
+        </div>
+        <div style="font-size: 0.5em; margin-top:10px; color:#aaa;">
+            Exercise ${state.currentIndex + 1} of ${keys.length}
+        </div>
+    `;
+
+    // 4. Buttons
+    actions.innerHTML = `
+        <button id="btn-complete" class="btn btn-complete">✓ Complete</button>
+        <button id="btn-postpone" class="btn btn-postpone">⏰ Postpone</button>
+        <button id="btn-skip" class="btn btn-skip">⏭ Skip</button>
+    `;
+
+    // 5. Listeners
+    document.getElementById('btn-complete').addEventListener('click', handleComplete);
+    document.getElementById('btn-postpone').addEventListener('click', handlePostpone);
+    document.getElementById('btn-skip').addEventListener('click', handleSkip);
+}
+
+// --- 4. ACTION HANDLERS ---
+
+function handleComplete() {
+    // 1. Advance Index
+    const keys = Object.keys(state.catalog).sort();
+    state.currentIndex++;
+    if (state.currentIndex >= keys.length) state.currentIndex = 0;
+
+    // 2. Save
+    StorageManager.save(state);
+
+    // 3. Refresh UI immediately (User sees next exercise)
+    // We do NOT close the window. The App handles that.
+    renderUI();
+}
+
+function handlePostpone() {
+    // No index change. No save needed. No window close.
+    StorageManager.log("Postponed. Waiting for App to close...");
+}
+
+function handleSkip() {
+    // Same as postpone per requirements.
+    StorageManager.log("Skipped. Waiting for App to close...");
+}
+
+// --- 5. CATALOG EDITOR (Minimal) ---
+const settingsBtn = document.querySelector('.settings-button');
+if (!settingsBtn) {
+    const btn = document.createElement('button');
+    btn.innerHTML = '⚙️';
+    btn.className = 'settings-button';
+    document.querySelector('.cell').appendChild(btn);
+    btn.addEventListener('click', () => {
+        const cat = document.querySelector('.catalog-box');
+        cat.style.display = cat.style.display === 'flex' ? 'none' : 'flex';
+        renderCatalog();
     });
-    
-    // Create a new exercise ID
-    let newId = 'ex' + (highestNum + 1).toString().padStart(2, '0');
-    
-    // Add new exercise to local catalog
-    localCatalog[newId] = { name: 'New Exercise', reps: 10, type: 'reps', description: 'Add description here' };
-    
-    // Generate new shuffle when adding exercises
-    shuffleExercises();
-    
-    // Refresh the display
-    displayCatalog();
-  });
-  
-  catalogBox.appendChild(addButton);
-  
-  // Add a reshuffle exercises button
-  let reshuffleButton = document.createElement('button');
-  reshuffleButton.innerHTML = '🔄 Shuffle Exercises';
-  reshuffleButton.className = 'reshuffle-button';
-  reshuffleButton.style.width = '100%';
-  reshuffleButton.style.padding = '10px';
-  reshuffleButton.style.margin = '10px 0';
-  reshuffleButton.style.backgroundColor = '#888';
-  reshuffleButton.style.color = 'white';
-  reshuffleButton.style.border = 'none';
-  reshuffleButton.style.borderRadius = '5px';
-  reshuffleButton.style.cursor = 'pointer';
-  
-  reshuffleButton.addEventListener('click', function() {
-    // Generate new random sequence
-    shuffleExercises();
-    
-    // Display first exercise in new sequence
-    displayExercise();
-    
-    alert('Exercises have been shuffled into a new random sequence.');
-  });
-  
-  catalogBox.appendChild(reshuffleButton);
 }
 
-// Picks the next exercise in the shuffled sequence
-function pickNextExercise() {
-  // Generate the initial shuffle if this is first time
-  if (isFirstLoad) {
-    shuffleExercises();
-    isFirstLoad = false;
-  }
-  
-  // Get all exercise keys in sorted order
-  const keys = Object.keys(localCatalog).sort();
-  
-  // When we've shown all exercises, reshuffle the deck
-  if (currentExerciseIndex >= exerciseIndices.length) {
-    shuffleExercises();
-  }
-  
-  // Get the current shuffled index
-  const shuffledIndex = exerciseIndices[currentExerciseIndex];
-  
-  // Get the exercise key at this index
-  const prop = keys[shuffledIndex];
-  
-  // Increment index for next time
-  currentExerciseIndex++;
-  
-  // Output the exercise details
-  output.exercise = localCatalog[prop].name;
-  output.reps = localCatalog[prop].reps;
-  output.type = localCatalog[prop].type || 'reps';
-  output.description = localCatalog[prop].description || '';
+function renderCatalog() {
+    const box = document.querySelector('.catalog-box');
+    box.innerHTML = '<h3 class="catalog-title">Exercises</h3><button class="close-button" onclick="this.parentElement.style.display=\'none\'">×</button>';
+    for (let key in state.catalog) {
+        const item = state.catalog[key];
+        const div = document.createElement('div');
+        div.style.color = 'white';
+        div.style.borderBottom = '1px solid #333';
+        div.style.padding = '5px';
+        div.style.fontSize = '0.5em';
+        div.textContent = `${item.name} (${item.reps})`;
+        box.appendChild(div);
+    }
 }
 
-// Displays the 'output' values in the large, center HTML .displayBox
-function displayExercise() {
-  pickNextExercise();
-  
-  // Display differently based on exercise type
-  let exerciseContent = '';
-  if (output.type === 'time') {
-    exerciseContent = `${output.reps} <span class="multiplier">sec</span> ${output.exercise}`;
-  } else {
-    exerciseContent = `${output.reps} <span class="multiplier">×</span> ${output.exercise}`;
-  }
-
-  // Add progress indicator showing current position in rotation
-  // Fixed: Show the correct exercise number (currentExerciseIndex) out of total exercises
-  let keys = Object.keys(localCatalog);
-  let progressText = `<div class="progress-indicator">${currentExerciseIndex} / ${keys.length}</div>`;
-  exerciseContent += progressText;
-    
-  // Add description below exercise name
-  if (output.description) {
-    exerciseContent += `<div class="exercise-description">${output.description}</div>`;
-  }
-  
-  displayBox.innerHTML = exerciseContent;
-}
-
-// Initialize the app
-displayExercise();
-displayCatalog(); // Create the catalog but keep it hidden initially
-
-// Log info to console for debugging
-console.log('FlexBreak loaded with', Object.keys(localCatalog).length, 'exercises');
-console.log('Current exercise index:', currentExerciseIndex);
-
-// Add the 'loaded' class upon successful document load
-window.onload = function(e) {
-  document.querySelector('body').className = 'loaded';
-};
+window.onload = init;
