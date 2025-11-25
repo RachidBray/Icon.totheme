@@ -1,0 +1,363 @@
+:root {
+    --heading: RGBA(239, 102, 254, 1);
+    /* hibiscus */
+    --subheading: RGBA(253, 151, 39, 1);
+    /* orange sorbet */
+    --catalog-name: RGBA(140, 193, 82, 1);
+    /* matcha */
+    --catalog-reps: RGBA(205, 218, 73, 1);
+    /* lemongrass */
+    --current-exercise: RGBA(30, 170, 241, 1);
+    /* california sky */
+    --focus-text: RGBA(40, 40, 40, 1);
+    /* slate grey */
+    --focus-bg: RGBA(220, 220, 220, 1);
+    /* cloud grey */
+}
+
+* {
+    /*border: 1px dotted oldlace;*/
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+}
+
+body {
+    opacity: 0;
+    font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, sans-serif;
+    color: #fff;
+    font-weight: 300;
+    font-size: 5vmin;
+    line-height: 1.5;
+    /* bg-color can be set in the Time Out prefs */
+    /* ...so it's left transparent is set here */
+    background: radial-gradient(circle, transparent, #000);
+}
+
+
+/* a nice fade-in effect to lessen the harsh transition */
+
+.loaded {
+    opacity: 1;
+    transition-delay: 5s;
+    transition: opacity 1s ease;
+}
+
+h1 {
+    line-height: 2em;
+    font-size: 1.6em;
+    font-weight: bold;
+    margin: 0.5em 0 0.5em;
+    position: relative;
+}
+
+h1::before,
+h1::after {
+    content: '';
+    background: var(--heading);
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: -10%;
+    z-index: -1;
+}
+
+h1::after {
+    transform: rotate(2deg);
+    width: 120%;
+    height: 100%;
+}
+
+h1::before {
+    transform: rotate(2deg);
+    top: 0%;
+    left: -11%;
+    opacity: 0.5;
+    width: 122%;
+    height: 110%;
+}
+
+h2 {
+    font-style: italic;
+    font-size: 1.1em;
+    font-weight: 500;
+    line-height: 1.5em;
+    margin: 0;
+    position: relative;
+}
+
+h2::before,
+h2::after {
+    content: '';
+    background: var(--subheading);
+    width: 120%;
+    height: 100%;
+    display: inline-block;
+    position: absolute;
+    top: -0.4em;
+    left: -15%;
+    transform: rotate(-0.5deg);
+    z-index: -1;
+    padding: 0.5em;
+}
+
+h2::before {
+    width: 122%;
+    height: 110%;
+    top: -0.5%;
+    left: -15%;
+    opacity: 0.5;
+}
+
+.current-exercise {
+    text-transform: capitalize;
+    font-weight: bolder;
+    font-size: 1.9em;
+    line-height: 1em;
+    position: relative;
+    color: #333;
+    margin: 1em 0 0;
+    padding: 1em;
+}
+
+.current-exercise::after,
+.current-exercise::before {
+    content: '';
+    background: var(--current-exercise);
+    width: 120%;
+    height: 100%;
+    display: inline-block;
+    position: absolute;
+    top: 0em;
+    left: -10%;
+    transform: rotate(2deg);
+    z-index: -1;
+    animation: teeter 1.5s ease;
+    animation-iteration-count: infinite;
+}
+
+.current-exercise::before {
+    top: -1%;
+    left: -12%;
+    width: 125%;
+    height: 110%;
+    opacity: 0.5;
+}
+
+.exercise-description {
+    font-size: 2rem;
+    opacity: 0.8;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.close-button:hover {
+    color: var(--current-exercise);
+}
+
+.progress-indicator {
+    font-size: 1rem;
+    opacity: 0.7;
+    text-align: center;
+}
+
+.multiplier {
+    color: white;
+    font-weight: bold;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.cell {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    text-align: center;
+}
+
+.catalog-box {
+    display: flex;
+    align-self: flex-end;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+    width: 90vw;
+    font-size: 0.6em;
+    background: grey;
+    text-align: center;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.catalog-title {
+    width: 100%;
+    font-size: 1em;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+
+/* container for exercise/reps data pairs */
+
+.catalog-box dl {
+    display: flex !important;
+    margin-bottom: 5px !important;
+    width: 100%;
+    margin: 0;
+}
+
+
+/* general rules for both name and reps */
+
+.catalog-box dl dt,
+.catalog-box dl dd {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-overflow: ellipsis ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0;
+}
+
+
+/* exercise name */
+
+.catalog-box dt {
+    background: var(--catalog-name);
+    width: 70%;
+    font-weight: 400;
+}
+
+
+/* number of reps */
+
+.catalog-box dd {
+    background: var(--catalog-reps);
+    width: 30%;
+    font-weight: 700;
+}
+
+.catalog-box dt:focus,
+.catalog-box dd:focus {
+    outline: none;
+    /* remove webkit's blue focus box on selected fields */
+    background: var(--focus-bg);
+    color: var(--focus-text);
+    transition: all 200ms ease;
+}
+
+.reset {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 2s ease;
+}
+
+
+/* custom 'title' tooltip */
+
+.reset[title]:hover:after {
+    opacity: 1;
+    content: attr(title);
+    position: absolute;
+    padding: 0.1em 0.2em;
+    color: white;
+    background: var(--current-exercise);
+    font-weight: normal;
+    font-size: 0.6em;
+    text-transform: capitalize;
+    right: 0%;
+    top: -100%;
+    z-index: 11;
+    white-space: nowrap;
+}
+
+.reset:not(:active) {
+    animation: flexy 1s ease;
+    transition: transition 1s step-end;
+    /* step-end is used to jump to the end of the animation to ensure the whole animation is run on click (:active) */
+}
+
+
+/* animation to show when reset icon is clicked */
+
+@keyframes flexy {
+    0%,
+    100% {
+        transform: scale3d(1, 1, 1);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: scale3d(1.2, 0.8, 1);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: scale3d(0.8, 1.2, 1);
+    }
+}
+
+@keyframes teeter {
+    0%,
+    100% {
+        transform: rotate(-1deg);
+    }
+    50% {
+        transform: rotate(1deg);
+    }
+}
+
+.pulse {
+    animation-name: pulsing;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes pulsing {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.settings-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--current-exercise);
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 99;
+    transition: transform 0.3s ease;
+}
+
+.settings-button:hover {
+    transform: scale(1.1) rotate(30deg);
+}
