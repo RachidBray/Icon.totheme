@@ -1,426 +1,308 @@
 :root {
-    --heading: RGBA(239, 102, 254, 1);
-    /* hibiscus */
-    --subheading: RGBA(253, 151, 39, 1);
-    /* orange sorbet */
-    --catalog-name: RGBA(140, 193, 82, 1);
-    /* matcha */
-    --catalog-reps: RGBA(205, 218, 73, 1);
-    /* lemongrass */
-    --current-exercise: RGBA(30, 170, 241, 1);
-    /* california sky */
-    --focus-text: RGBA(40, 40, 40, 1);
-    /* slate grey */
-    --focus-bg: RGBA(220, 220, 220, 1);
-    /* cloud grey */
+    /* --- Dark Theme Palette --- */
+    --bg-color: #050505;          /* Almost black */
+    --card-bg: #1A1A1A;           /* Dark grey card */
+    --text-primary: #FFFFFF;
+    --text-secondary: #888888;
+    
+    /* --- Accents --- */
+    --accent-primary: #FFFFFF;    /* Bold white for primary actions */
+    --accent-glow: rgba(255, 255, 255, 0.1);
+    
+    /* --- Functional Colors --- */
+    --btn-complete: #2F2F2F;      /* Dark grey button */
+    --btn-complete-text: #FFFFFF;
+    --btn-complete-hover: #404040;
+
+    --btn-action: #000000;        /* Black button */
+    --btn-action-text: #888888;
+    --btn-action-border: #333333;
+    
+    /* --- Typography --- */
+    --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 * {
-    /*border: 1px dotted oldlace;*/
     box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
     height: 100%;
     overflow: hidden;
     margin: 0;
+    padding: 0;
 }
 
 body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-stack);
     opacity: 0;
-    font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, sans-serif;
-    color: #fff;
-    font-weight: 300;
-    font-size: 5vmin;
-    line-height: 1.5;
-    /* bg-color can be set in the Time Out prefs */
-    /* ...so it's left transparent is set... */
-    transition: opacity 1s ease-in-out;
+    transition: opacity 0.5s ease;
 }
 
 body.loaded {
     opacity: 1;
 }
 
+/* --- Layout --- */
 .content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100%;
+    padding: 20px;
 }
 
 .cell {
-    text-align: center;
-    width: 80%;
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-}
-
-h1 {
-    font-weight: 700;
-    color: var(--heading);
-    font-size: 1em;
-    margin-bottom: 0.1em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-h2 {
-    font-weight: 400;
-    color: var(--subheading);
-    font-size: 0.6em;
-    margin-top: 0;
-    margin-bottom: 0.8em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.current-exercise {
-    font-size: 1.4em;
-    font-weight: 700;
-    color: var(--current-exercise);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    min-height: 1.5em;
-    transition: transform 0.5s ease-in-out;
-}
-
-.current-exercise.pulse {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-.multiplier {
-    font-size: 0.8em;
-    color: var(--subheading);
-    margin: 0 0.1em;
-}
-
-/* Catalog UI Styles */
-.catalog-box {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    max-width: 500px;
+    text-align: center;
+}
+
+/* --- Typography --- */
+.main-title {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin: 0;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+.sub-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+/* --- Exercise Card --- */
+.current-exercise {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 1px solid #333;
+    transition: transform 0.3s ease;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    z-index: 1000;
+    align-items: center;
 }
 
-.catalog-title {
-    color: white;
-    font-size: 0.6em;
-    margin-bottom: 20px;
-}
-
-.catalog-box dl {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    margin: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 10px;
-}
-
-.catalog-box dt,
-.catalog-box dd {
-    font-size: 0.4em;
-    margin: 0;
-    padding: 5px;
-    border-radius: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    box-sizing: border-box;
-}
-
-.catalog-box dt {
-    color: var(--catalog-name);
-    font-weight: 700;
-}
-
-.catalog-box dd {
-    color: var(--catalog-reps);
-    font-weight: 400;
-}
-
-.catalog-box [contentEditable=true]:focus {
-    background: var(--focus-bg);
-    color: var(--focus-text);
-    outline: 1px solid var(--current-exercise);
-}
-
-.reset {
-    font-size: 1em;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-/* New element styles */
-.settings-button {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    background: var(--current-exercise);
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 50%;
-    font-size: 1.5em;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    z-index: 99;
-    transition: transform 0.3s ease;
-}
-
-.settings-button:hover {
-    transform: scale(1.1) rotate(30deg);
-}
-
-/* ADDED: Action button styles for Complete, Postpone, Skip */
-.action-buttons {
-    margin-top: 2em;
-    display: flex;
-    justify-content: center;
-    gap: 1em;
-    flex-wrap: wrap;
-}
-
-.action-button {
-    border: none;
-    padding: 0.8em 1.2em;
-    border-radius: 8px;
-    font-size: 0.9em;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.action-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.action-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.complete-button {
-    background: #10b981;
-    color: white;
-}
-
-.complete-button:hover {
-    background: #059669;
-}
-
-.postpone-button {
-    background: #f59e0b;
-    color: white;
-}
-
-.postpone-button:hover {
-    background: #d97706;
-}
-
-.skip-button {
-    background: #6b7280;
-    color: white;
-}
-
-.skip-button:hover {
-    background: #4b5563;
-}
-
-/* ADDED: Exercise image container styles */
 .exercise-image {
-    text-align: center;
-    margin-bottom: 1em;
+    margin-bottom: 25px;
+    position: relative;
 }
 
 .exercise-image img {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #000;
+    border: 2px solid #333;
 }
 
-.exercise-image img:hover {
-    transform: scale(1.1);
+/* Exercise Stats (Reps/Time) */
+.exercise-meta {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 5px;
 }
 
-/* ADDED: Description style */
-.exercise-description {
-    font-size: 0.4em;
-    font-weight: 300;
-    color: rgba(255, 255, 255, 0.8);
-    margin-top: 0.5em;
+.multiplier {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 5px;
 }
 
-/* ADDED: Progress indicator style */
-.progress-indicator {
-    font-size: 0.3em;
-    color: var(--subheading);
-    margin-top: 0.5em;
-    font-weight: 400;
-}
-
-:root {
-    --heading: RGBA(239, 102, 254, 1);
-    --subheading: RGBA(253, 151, 39, 1);
-    --catalog-name: RGBA(140, 193, 82, 1);
-    --catalog-reps: RGBA(205, 218, 73, 1);
-    --current-exercise: RGBA(30, 170, 241, 1);
-    --focus-text: RGBA(40, 40, 40, 1);
-    --focus-bg: RGBA(220, 220, 220, 1);
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-    height: 100%;
-    overflow: hidden;
-    margin: 0;
-}
-
-body {
-    opacity: 0;
-    font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, sans-serif;
-    color: #fff;
-    font-weight: 300;
-    font-size: 5vmin;
-    line-height: 1.5;
-    transition: opacity 1s ease-in-out;
-}
-
-body.loaded { opacity: 1; }
-
-.content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-
-.cell {
-    text-align: center;
-    width: 90%;
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-}
-
-h1 { font-weight: 700; color: var(--heading); font-size: 1em; margin-bottom: 0.1em; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
-h2 { font-weight: 400; color: var(--subheading); font-size: 0.6em; margin-top: 0; margin-bottom: 0.8em; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-
-/* Exercise Display */
-.current-exercise {
-    font-size: 1.2em;
+/* Exercise Name */
+.exercise-name {
+    font-size: 1.5rem;
     font-weight: 700;
-    color: var(--current-exercise);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    min-height: 1.5em;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.exercise-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 30px;
+    max-width: 90%;
+}
+
+.progress-indicator {
+    font-size: 0.7rem;
+    color: #444;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     margin-bottom: 20px;
 }
 
-.exercise-img {
-    display: block;
-    margin: 0 auto 15px auto;
-    width: 100px;
-    height: 100px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    object-fit: cover;
-}
-
-.multiplier { font-size: 0.8em; color: var(--subheading); margin: 0 0.1em; }
-
-/* Buttons */
+/* --- Action Buttons --- */
 .action-buttons {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.btn {
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 0.5em; /* Relative to body font size */
-    cursor: pointer;
-    font-weight: bold;
-    color: white;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    transition: transform 0.2s;
-    outline: none;
-}
-
-.btn:hover { transform: scale(1.05); }
-.btn:active { transform: scale(0.95); }
-
-.btn-complete { background-color: #2ecc71; } /* Green */
-.btn-postpone { background-color: #f1c40f; color: #333; } /* Yellow */
-.btn-skip { background-color: #95a5a6; } /* Grey */
-
-/* Debug Bar */
-#debug-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0,0,0,0.8);
-    color: lime;
-    font-size: 12px;
-    padding: 5px;
-    text-align: center;
-    font-family: monospace;
-    z-index: 9999;
-}
-
-/* Catalog (Keep hidden by default) */
-.catalog-box {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
-    display: none; /* JS toggles this */
     flex-direction: column;
-    padding: 20px;
-    z-index: 1000;
+    gap: 12px;
+    width: 100%;
+}
+
+.action-button {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: var(--font-stack);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Complete Button (Hero) */
+.complete-button {
+    background: var(--btn-complete);
+    color: var(--btn-complete-text);
+    border: 1px solid #444;
+}
+
+.complete-button:hover {
+    background: var(--btn-complete-hover);
+    transform: translateY(-2px);
+    border-color: #666;
+}
+
+/* Secondary Buttons */
+.secondary-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.postpone-button, .skip-button {
+    background: transparent;
+    color: var(--btn-action-text);
+    border: 1px solid var(--btn-action-border);
+    flex: 1;
+    font-size: 0.8rem;
+    padding: 12px;
+}
+
+.postpone-button:hover, .skip-button:hover {
+    border-color: #666;
+    color: #FFF;
+    background: #111;
+}
+
+/* --- Catalog / Settings --- */
+.settings-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: 1px solid #333;
+    color: #666;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+.settings-button:hover {
+    border-color: #FFF;
+    color: #FFF;
+}
+
+.catalog-box {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    z-index: 100;
     overflow-y: auto;
 }
-.catalog-title { color: white; font-size: 0.6em; }
-.settings-button {
-    position: absolute; bottom: 20px; right: 20px;
-    background: var(--current-exercise); color: white;
-    border: none; padding: 10px; border-radius: 50%;
-    cursor: pointer; z-index: 99;
+
+.catalog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
 }
+
+.catalog-title {
+    color: #FFF;
+    font-weight: 900;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.reset {
+    color: #666;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.reset:hover { color: #F00; }
+
 .close-button {
-    position: absolute; top: 10px; right: 10px;
-    background: transparent; color: white; border: none; font-size: 2em; cursor: pointer;
+    color: #FFF;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+/* Catalog Items */
+dl {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #222;
+    color: #888;
+}
+
+dt[data-item="name"] {
+    color: #FFF;
+    font-weight: 600;
+    flex-grow: 1;
+}
+
+/* --- Debug Bar --- */
+#debug-bar {
+    position: fixed;
+    bottom: 0; left: 0; width: 100%;
+    background: #000;
+    color: #444;
+    font-size: 10px;
+    padding: 5px 10px;
+    font-family: monospace;
+    border-top: 1px solid #111;
+    text-transform: uppercase;
 }

@@ -1,12 +1,33 @@
-/**
- * MUSCLE BREAK APP - FINAL LOGIC
- * Behavior: Persistence + Deterministic Order.
- * Window Management: Handled by external App (No window.close() calls).
- */
 
-// --- 1. CONFIGURATION & DATA ---
+// grab our dom elements
+let displayBox = document.querySelector('.current-exercise'),
+    catalogBox = document.querySelector('.catalog-box'),
+    resetButton = document.querySelector('.reset');
 
-const defaultCatalog = {
+// Hide catalog box by default (will show as popup)
+catalogBox.style.display = 'none';
+
+// Add a settings button to trigger the popup
+// Check if button already exists to avoid duplication on reload
+if (!document.querySelector('.settings-button')) {
+    let settingsButton = document.createElement('button');
+    settingsButton.innerHTML = '⚙';
+    settingsButton.className = 'settings-button';
+    settingsButton.title = 'Customize Exercises';
+    document.querySelector('.cell').appendChild(settingsButton);
+
+    // Add event listener to show/hide the catalog box
+    settingsButton.addEventListener('click', function() {
+        if (catalogBox.style.display === 'none') {
+            catalogBox.style.display = 'block'; // CSS handles positioning
+        } else {
+            catalogBox.style.display = 'none';
+        }
+    });
+}
+
+// Define a default set of exercises
+let catalog = {
   ex01: { name: 'Neck Circles & Tilts', reps: 5, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
   ex02: { name: 'Shoulder Circles & Shrugs', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
   ex03: { name: 'Arm Circles', reps: 10, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' },
@@ -67,176 +88,305 @@ const defaultCatalog = {
   ex58: { name: 'Psoas Stretch', reps: 6, type: 'reps', image: 'https://cdn-icons-png.flaticon.com/512/2548/2548532.png' }
 };
 
-// Global State
-let state = {
-    currentIndex: 0,
-    catalog: { ...defaultCatalog }
-};
+// This is the working catalog that will be used
+let localCatalog = {...catalog};
 
-// --- 2. STORAGE MANAGER (Persistence Logic) ---
-// Tries LocalStorage first, falls back to Cookies.
+let currentExerciseIndex = 0;
+let exerciseCompleted = {};
 
-const StorageManager = {
-    KEY: 'muscle_break_v2_data',
-
-    save: function(dataObj) {
-        const jsonString = JSON.stringify(dataObj);
-        let status = [];
-
-        // Method 1: LocalStorage
-        try {
-            localStorage.setItem(this.KEY, jsonString);
-            status.push("LS: OK");
-        } catch (e) {
-            status.push("LS: Fail");
-        }
-
-        // Method 2: Cookies (Backup)
-        try {
-            const date = new Date();
-            date.setTime(date.getTime() + (365*24*60*60*1000));
-            document.cookie = `${this.KEY}=${encodeURIComponent(jsonString)}; expires=${date.toUTCString()}; path=/`;
-            status.push("Cookie: OK");
-        } catch (e) {
-            status.push("Cookie: Fail");
-        }
-
-        this.log(`Saved (Index ${dataObj.currentIndex}) | ${status.join(', ')}`);
-    },
-
-    load: function() {
-        let loadedData = null;
-        let source = "";
-
-        // Try LocalStorage
-        try {
-            const lsData = localStorage.getItem(this.KEY);
-            if (lsData) {
-                loadedData = JSON.parse(lsData);
-                source = "LS";
-            }
-        } catch(e) {}
-
-        // Try Cookies
-        if (!loadedData) {
-            try {
-                const nameEQ = this.KEY + "=";
-                const ca = document.cookie.split(';');
-                for(let i=0;i < ca.length;i++) {
-                    let c = ca[i];
-                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                    if (c.indexOf(nameEQ) == 0) {
-                        loadedData = JSON.parse(decodeURIComponent(c.substring(nameEQ.length,c.length)));
-                        source = "Cookie";
-                        break;
-                    }
-                }
-            } catch(e) {}
-        }
-
-        if (loadedData) {
-            this.log(`Loaded Index: ${loadedData.currentIndex} (${source})`);
-            return loadedData;
-        } else {
-            this.log(`No saved data. Starting Index 0.`);
-            return null;
-        }
-    },
-
-    log: function(msg) {
-        console.log(msg);
-        const bar = document.getElementById('debug-bar');
-        if (bar) bar.textContent = msg;
-    }
-};
-
-// --- 3. APP LOGIC ---
-
-function init() {
-    const loaded = StorageManager.load();
-    if (loaded) {
-        state = loaded;
-        const keys = Object.keys(state.catalog);
-        if (state.currentIndex >= keys.length) state.currentIndex = 0;
-    }
-    renderUI();
-    document.body.classList.add('loaded');
-}
-
-function renderUI() {
-    // 1. Get current exercise
-    const keys = Object.keys(state.catalog).sort(); 
-    const currentKey = keys[state.currentIndex];
-    const exercise = state.catalog[currentKey];
-
-    // 2. DOM Elements
-    const container = document.querySelector('.current-exercise');
-    const actions = document.getElementById('action-container');
-
-    // 3. Build HTML
-    const multiplier = exercise.type === 'time' ? 'sec' : '×';
+// Robust storage helper
+const AppStorage = {
+  key: 'muscle-break-state',
+  
+  save: function(data) {
+    const value = JSON.stringify(data);
+    let saved = false;
     
-    container.innerHTML = `
-        <img src="${exercise.image}" class="exercise-img" alt="Exercise">
-        <div class="exercise-text">
-            ${exercise.reps} <span class="multiplier">${multiplier}</span> ${exercise.name}
-        </div>
-        <div style="font-size: 0.5em; margin-top:10px; color:#aaa;">
-            Exercise ${state.currentIndex + 1} of ${keys.length}
-        </div>
-    `;
+    // Try localStorage
+    try {
+      localStorage.setItem(this.key, value);
+      saved = true;
+    } catch (e) {}
 
-    // 4. Buttons (Only Complete)
-    actions.innerHTML = `
-        <button id="btn-complete" class="btn btn-complete">✓ Complete</button>
-    `;
+    // Try cookie
+    try {
+      const date = new Date();
+      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+      document.cookie = `${this.key}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/`;
+      saved = true;
+    } catch (e) {}
+    
+    updateDebugDisplay(saved ? 'Saved' : 'Save Failed');
+    return saved;
+  },
+  
+  load: function() {
+    let data = null;
+    let source = 'None';
 
-    // 5. Listener (Only Complete)
-    document.getElementById('btn-complete').addEventListener('click', handleComplete);
-}
-
-// --- 4. ACTION HANDLERS ---
-
-function handleComplete() {
-    // 1. Advance Index
-    const keys = Object.keys(state.catalog).sort();
-    state.currentIndex++;
-    if (state.currentIndex >= keys.length) state.currentIndex = 0;
-
-    // 2. Save
-    StorageManager.save(state);
-
-    // 3. Refresh UI immediately (User sees next exercise)
-    renderUI();
-}
-
-// --- 5. CATALOG EDITOR (Minimal) ---
-const settingsBtn = document.querySelector('.settings-button');
-if (!settingsBtn) {
-    const btn = document.createElement('button');
-    btn.innerHTML = '⚙️';
-    btn.className = 'settings-button';
-    document.querySelector('.cell').appendChild(btn);
-    btn.addEventListener('click', () => {
-        const cat = document.querySelector('.catalog-box');
-        cat.style.display = cat.style.display === 'flex' ? 'none' : 'flex';
-        renderCatalog();
-    });
-}
-
-function renderCatalog() {
-    const box = document.querySelector('.catalog-box');
-    box.innerHTML = '<h3 class="catalog-title">Exercises</h3><button class="close-button" onclick="this.parentElement.style.display=\'none\'">×</button>';
-    for (let key in state.catalog) {
-        const item = state.catalog[key];
-        const div = document.createElement('div');
-        div.style.color = 'white';
-        div.style.borderBottom = '1px solid #333';
-        div.style.padding = '5px';
-        div.style.fontSize = '0.5em';
-        div.textContent = `${item.name} (${item.reps})`;
-        box.appendChild(div);
+    try {
+      const fromLocal = localStorage.getItem(this.key);
+      if (fromLocal) {
+        data = JSON.parse(fromLocal);
+        source = 'LS';
+      }
+    } catch (e) {}
+    
+    if (!data) {
+      try {
+        const nameEQ = this.key + "=";
+        const ca = document.cookie.split(';');
+        for(let i=0;i < ca.length;i++) {
+          let c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) {
+            data = JSON.parse(decodeURIComponent(c.substring(nameEQ.length,c.length)));
+            source = 'Cookie';
+            break;
+          }
+        }
+      } catch (e) {}
     }
+    
+    updateDebugDisplay(data ? `${source}` : 'No Data');
+    return data;
+  }
+};
+
+function updateDebugDisplay(status) {
+  let debugEl = document.getElementById('debug-status');
+  if (debugEl) {
+    debugEl.textContent = `Idx: ${currentExerciseIndex}`;
+  }
 }
 
-window.onload = init;
+function loadState() {
+  try {
+    const state = AppStorage.load();
+    if (state) {
+      currentExerciseIndex = parseInt(state.currentIndex);
+      if (isNaN(currentExerciseIndex)) currentExerciseIndex = 0;
+      exerciseCompleted = state.completed || {};
+      if (state.catalog) localCatalog = { ...state.catalog };
+      
+      const keys = Object.keys(localCatalog).sort();
+      if (currentExerciseIndex >= keys.length) currentExerciseIndex = 0;
+    }
+  } catch (e) {
+    currentExerciseIndex = 0;
+    exerciseCompleted = {};
+  }
+}
+
+function saveState() {
+  const state = {
+    currentIndex: currentExerciseIndex,
+    completed: exerciseCompleted,
+    catalog: localCatalog
+  };
+  AppStorage.save(state);
+}
+
+// Validation
+function validateCatalog() {
+  if (Object.keys(localCatalog).length === 0) {
+    localCatalog = { ...catalog };
+    currentExerciseIndex = 0;
+    saveState();
+  }
+}
+
+function validateCurrentExercise() {
+  const keys = Object.keys(localCatalog).sort();
+  if (currentExerciseIndex >= keys.length) {
+    currentExerciseIndex = 0;
+    saveState();
+  }
+}
+
+let output = {
+  exercise: 0,
+  reps: 0,
+  type: 'reps',
+  description: '',
+  image: ''
+};
+
+if (resetButton) {
+  resetButton.addEventListener('click', function() {
+    localCatalog = {...catalog};
+    currentExerciseIndex = 0;
+    exerciseCompleted = {};
+    saveState();
+    displayExercise();
+    displayCatalog();
+  });
+}
+
+// Create HTML elements for catalog
+function displayCatalog() {
+  // Clear existing dl elements
+  let existingDls = catalogBox.querySelectorAll('dl');
+  existingDls.forEach(el => el.remove());
+
+  // Check if close button exists, if not create it
+  if (!catalogBox.querySelector('.close-button')) {
+    let closeButton = document.createElement('button');
+    closeButton.innerHTML = '×';
+    closeButton.className = 'close-button';
+    closeButton.addEventListener('click', function() {
+      catalogBox.style.display = 'none';
+    });
+    catalogBox.appendChild(closeButton);
+  }
+
+  for (var item in localCatalog) {
+    if (typeof localCatalog[item] !== 'function') {
+      let exerciseSet = document.createElement('dl'),
+        nameBox = document.createElement('dt'),
+        repsBox = document.createElement('dd'),
+        typeBox = document.createElement('dd'),
+        descBox = document.createElement('dd');
+
+      exerciseSet.setAttribute('data-item', item);
+
+      nameBox.contentEditable = true;
+      repsBox.contentEditable = true;
+      typeBox.contentEditable = true;
+      descBox.contentEditable = true;
+
+      nameBox.setAttribute('data-item', 'name');
+      repsBox.setAttribute('data-item', 'reps');
+      typeBox.setAttribute('data-item', 'type');
+      descBox.setAttribute('data-item', 'description');
+
+      nameBox.textContent = localCatalog[item].name;
+      repsBox.textContent = localCatalog[item].reps;
+      typeBox.textContent = localCatalog[item].type || 'reps';
+      descBox.textContent = localCatalog[item].description || 'Desc';
+      
+      // Catalog styling logic is now handled by CSS classes mostly
+      exerciseSet.appendChild(nameBox);
+      exerciseSet.appendChild(repsBox);
+      exerciseSet.appendChild(typeBox);
+      exerciseSet.appendChild(descBox);
+      catalogBox.appendChild(exerciseSet);
+    }
+  }
+  
+  // Update button logic (prevent duplication)
+  if (!catalogBox.querySelector('.add-button')) {
+    let addButton = document.createElement('button');
+    addButton.innerHTML = '+ ADD NEW';
+    addButton.className = 'action-button complete-button add-button'; // Reuse classes
+    addButton.style.marginTop = '20px'; // Minor adjustment
+    
+    addButton.addEventListener('click', function() {
+      let keys = Object.keys(localCatalog);
+      let highestNum = 0;
+      keys.forEach(key => {
+        let num = parseInt(key.replace('ex', ''));
+        if (num > highestNum) highestNum = num;
+      });
+      let newId = 'ex' + (highestNum + 1).toString().padStart(2, '0');
+      localCatalog[newId] = { name: 'New Exercise', reps: 10, type: 'reps', description: 'Desc', image: '' };
+      saveState();
+      displayCatalog();
+    });
+    catalogBox.appendChild(addButton);
+  }
+}
+
+function getCurrentExercise() {
+  validateCatalog();
+  validateCurrentExercise();
+  const keys = Object.keys(localCatalog).sort();
+  if (currentExerciseIndex >= keys.length) currentExerciseIndex = 0;
+  
+  const prop = keys[currentExerciseIndex];
+  output.exercise = localCatalog[prop].name;
+  output.reps = localCatalog[prop].reps;
+  output.type = localCatalog[prop].type || 'reps';
+  output.description = localCatalog[prop].description || '';
+  output.image = localCatalog[prop].image || '';
+}
+
+function completeCurrentExercise() {
+  const keys = Object.keys(localCatalog).sort();
+  const currentKey = keys[currentExerciseIndex];
+  
+  exerciseCompleted[currentKey] = true;
+  currentExerciseIndex++;
+  if (currentExerciseIndex >= keys.length) currentExerciseIndex = 0;
+  
+  saveState();
+  // Simply update UI, let App handle window closing via its own triggers
+  displayExercise();
+}
+
+function displayExercise() {
+  getCurrentExercise();
+  
+  let exerciseContent = '';
+  
+  // 1. Progress
+  let keys = Object.keys(localCatalog);
+  exerciseContent += `<div class="progress-indicator">EXERCISE ${currentExerciseIndex + 1} / ${keys.length}</div>`;
+
+  // 2. Image
+  if (output.image) {
+    exerciseContent += `<div class="exercise-image">
+      <img src="${output.image}" alt="${output.exercise}">
+    </div>`;
+  }
+  
+  // 3. Stats (Big Bold Text)
+  let multiplierStr = output.type === 'time' ? 'SEC' : 'REPS';
+  exerciseContent += `<div class="exercise-stats">
+    <span class="exercise-meta">${output.reps}</span>
+    <span class="multiplier">${multiplierStr}</span>
+  </div>`;
+
+  // 4. Name
+  exerciseContent += `<div class="exercise-name">${output.exercise}</div>`;
+
+  // 5. Description
+  if (output.description) {
+    exerciseContent += `<div class="exercise-description">${output.description}</div>`;
+  }
+  
+  // 6. Buttons - Clean Structure, Classes Only
+  exerciseContent += `
+    <div class="action-buttons">
+      <button id="complete-btn" class="action-button complete-button">
+        Done
+      </button>
+    </div>
+  `;
+  
+  displayBox.innerHTML = exerciseContent;
+  addActionButtonListeners();
+}
+
+function addActionButtonListeners() {
+  const completeBtn = document.getElementById('complete-btn');
+
+  if (completeBtn) {
+    const newBtn = completeBtn.cloneNode(true); 
+    completeBtn.parentNode.replaceChild(newBtn, completeBtn);
+    newBtn.addEventListener('click', function() {
+      completeCurrentExercise(); 
+    });
+  }
+}
+
+// Init
+loadState(); 
+validateCatalog(); 
+displayExercise();
+displayCatalog();
+
+// Add 'loaded' class
+window.onload = function(e) {
+  document.body.className = 'loaded';
+};
