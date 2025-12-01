@@ -123,12 +123,11 @@ body.loaded {
 }
 
 .exercise-image img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    width: 300px;
+    height: 200px;
+    border-radius: 20px;
     object-fit: cover;
     background: #000;
-    border: 2px solid #333;
 }
 
 /* Exercise Stats (Reps/Time) */
@@ -177,7 +176,7 @@ body.loaded {
 }
 
 .progress-indicator {
-    font-size: 0.7rem;
+    font-size: 1rem;
     color: #444;
     font-weight: 700;
     text-transform: uppercase;
@@ -201,7 +200,7 @@ body.loaded {
     padding: 20px;
     border-radius: 12px;
     font-family: var(--font-stack);
-    font-size: 1rem;
+    font-size: 2rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
