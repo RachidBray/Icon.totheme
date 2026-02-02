@@ -73,7 +73,6 @@ body.loaded {
 
 .cell {
     width: 100%;
-    max-width: 800px;
     text-align: center;
 }
 
@@ -115,6 +114,30 @@ body.loaded {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.exercise-list {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+}
+
+.exercise-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.exercise-sequence {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
 }
 
 .exercise-image {
@@ -167,12 +190,28 @@ body.loaded {
     color: var(--text-primary);
 }
 
+.exercise-item .exercise-name {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
 .exercise-description {
     font-size: 0.9rem;
     color: var(--text-secondary);
     line-height: 1.5;
     margin-bottom: 30px;
     max-width: 90%;
+}
+
+.exercise-item .exercise-description {
+    margin-bottom: 0;
+}
+
+.exercise-empty {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    text-align: center;
+    padding: 40px 20px;
 }
 
 .progress-indicator {
