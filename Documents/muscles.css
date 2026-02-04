@@ -267,28 +267,32 @@ body.loaded {
 .description-tooltip .exercise-stats {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    padding: 8px 12px;
-    display: block;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .description-tooltip .exercise-meta {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 800;
     line-height: 1;
     color: #FFF;
     font-variant-numeric: tabular-nums;
-    display: inline-block;
+    display: block;
 }
 
 .description-tooltip .multiplier {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #888;
     font-weight: 600;
     text-transform: uppercase;
-    margin-left: 5px;
-    display: inline-block;
+    margin-top: 4px;
+    display: block;
+    letter-spacing: 1px;
 }
 
 /* Legacy stats container - hidden or adjusted if still used elsewhere */
