@@ -89,21 +89,14 @@ body.loaded {
 
 /* --- Typography --- */
 .main-title {
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: 900;
     letter-spacing: 1px;
     line-height: 1;
-    margin: 0;
-    color: var(--text-primary);
-    text-transform: uppercase;
-}
-
-.sub-title {
-    font-size: 2rem;
-    font-weight: 500;
-    color: var(--text-secondary);
     margin-top: 10px;
     margin-bottom: 40px;
+    color: var(--text-primary);
+    text-transform: uppercase;
 }
 
 /* --- Exercise Card --- */
@@ -354,10 +347,10 @@ body.loaded {
 /* --- Action Buttons Container Removed --- */
 
 .action-button {
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
     font-family: var(--font-stack);
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -493,19 +486,4 @@ dt[data-item="name"] {
     color: #FFF;
     font-weight: 600;
     flex-grow: 1;
-}
-
-/* --- Debug Bar --- */
-#debug-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #000;
-    color: #444;
-    font-size: 10px;
-    padding: 5px 10px;
-    font-family: monospace;
-    border-top: 1px solid #111;
-    text-transform: uppercase;
 }

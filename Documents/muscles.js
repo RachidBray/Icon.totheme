@@ -140,7 +140,7 @@ const AppStorage = {
     // Fallback to localStorage
     try {
       localStorage.setItem(this.key, JSON.stringify(data));
-      updateDebugDisplay('Save: localStorage');
+      // Removed debug log
       return true;
     } catch (e) {
       console.warn('localStorage save failed:', e);
@@ -149,7 +149,7 @@ const AppStorage = {
     // Fallback to sessionStorage
     try {
       sessionStorage.setItem(this.key, JSON.stringify(data));
-      updateDebugDisplay('Save: sessionStorage');
+      // Removed debug log
       return true;
     } catch (e) {
       console.warn('sessionStorage save failed:', e);
@@ -158,7 +158,7 @@ const AppStorage = {
     // Fallback to cookies
     try {
       this.saveCookie(data);
-      updateDebugDisplay('Save: Cookie');
+      // Removed debug log
       return true;
     } catch (e) {
       console.warn('Cookie save failed:', e);
@@ -167,13 +167,13 @@ const AppStorage = {
     // Fallback to URL hash
     try {
       this.saveHash(data);
-      updateDebugDisplay('Save: Hash');
+      // Removed debug log
       return true;
     } catch (e) {
       console.warn('Hash save failed:', e);
     }
 
-    updateDebugDisplay('Save: All Failed');
+    // Removed debug log
     return false;
   },
 
@@ -182,7 +182,7 @@ const AppStorage = {
     try {
       const idbData = await this.loadIndexedDB();
       if (idbData) {
-        updateDebugDisplay('Load: IDB');
+        // Removed debug log
         return idbData;
       }
     } catch (e) {
@@ -193,7 +193,7 @@ const AppStorage = {
     try {
       const lsData = localStorage.getItem(this.key);
       if (lsData) {
-        updateDebugDisplay('Load: localStorage');
+        // Removed debug log
         return JSON.parse(lsData);
       }
     } catch (e) {
@@ -204,7 +204,7 @@ const AppStorage = {
     try {
       const ssData = sessionStorage.getItem(this.key);
       if (ssData) {
-        updateDebugDisplay('Load: sessionStorage');
+        // Removed debug log
         return JSON.parse(ssData);
       }
     } catch (e) {
@@ -215,7 +215,7 @@ const AppStorage = {
     try {
       const cookieData = this.loadCookie();
       if (cookieData) {
-        updateDebugDisplay('Load: Cookie');
+        // Removed debug log
         return cookieData;
       }
     } catch (e) {
@@ -226,7 +226,7 @@ const AppStorage = {
     try {
       const hashData = this.loadHash();
       if (hashData) {
-        updateDebugDisplay('Load: Hash');
+        // Removed debug log
         return hashData;
       }
     } catch (e) {
@@ -252,7 +252,7 @@ const AppStorage = {
         const store = transaction.objectStore(this.storeName);
         store.put(data, this.key);
         transaction.oncomplete = () => {
-          updateDebugDisplay('Save: IDB');
+          // Removed debug log
           resolve(true);
         };
         transaction.onerror = () => resolve(false);
@@ -317,16 +317,7 @@ const AppStorage = {
   }
 };
 
-function updateDebugDisplay(msg) {
-  let debug = document.querySelector('.debug-save');
-  if (!debug) {
-    debug = document.createElement('div');
-    debug.className = 'debug-save';
-    debug.style.cssText = 'position:fixed; bottom:5px; right:5px; font-size:8px; opacity:0.3; pointer-events:none;';
-    document.body.appendChild(debug);
-  }
-  debug.textContent = msg;
-}
+
 
 async function saveState() {
   const state = {
@@ -503,7 +494,7 @@ function getCurrentExerciseGroup() {
     });
   }
 
-  updateDebugDisplay('Displaying Group');
+  // Removed debug log
   return group;
 }
 
@@ -559,7 +550,7 @@ function displayExercise() {
   exerciseContent += `
     <div class="exercise-top-bar">
       <div class="progress-indicator">مجموعة ${currentExerciseIndex + 1} من ${totalGroups}</div>
-      <button id="complete-btn" class="action-button complete-button">أنهيت</button>
+      <button id="complete-btn" class="action-button complete-button">التالي</button>
     </div>
   `;
 
