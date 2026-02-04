@@ -448,6 +448,7 @@ body.loaded {
     font-size: 1.2rem;
     letter-spacing: 1px;
     margin: 0;
+    flex-grow: 1;
 }
 
 .reset {
@@ -456,6 +457,8 @@ body.loaded {
     font-weight: 700;
     cursor: pointer;
     transition: color 0.2s;
+    margin-right: 25px;
+    white-space: nowrap;
 }
 
 .reset:hover {
@@ -464,13 +467,17 @@ body.loaded {
 
 .close-button {
     color: #FFF;
-    font-size: 2rem;
+    font-size: 2.2rem;
     background: none;
     border: none;
     cursor: pointer;
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-top: -5px;
+    /* Visual center adjustment */
 }
 
 /* Catalog Items */

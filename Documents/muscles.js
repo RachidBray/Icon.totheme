@@ -402,7 +402,8 @@ function displayCatalog() {
     closeButton.addEventListener('click', function () {
       catalogBox.style.display = 'none';
     });
-    catalogBox.appendChild(closeButton);
+    // Append to the header instead of the box root
+    catalogBox.querySelector('.catalog-header').appendChild(closeButton);
   }
 
   const keys = getCatalogKeys();
