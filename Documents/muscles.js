@@ -30,89 +30,89 @@ const EXERCISES_PER_BREAK = 3; // Number of exercises shown per break
 // Define a default set of exercises
 let catalog = {
   // Cycle 1: Spine & Upper Body (Desk Detox)
-  ex05: { name: 'Neck Circles & Tilts', reps: 5, type: 'reps', description: 'Releases upper trap tension from looking at screens.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex61: { name: 'Arm Circles', reps: 10, type: 'reps', description: 'Loosens shoulders and opens chest to counteract slouching.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex43: { name: 'Camel Cat', reps: 10, type: 'reps', description: 'Mobilizes the thoracic and lumbar spine (anti-stiffness).', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex05: { name: 'Neck Circles & Tilts', reps: 5, type: 'reps', description: 'Why: Releases tension in the upper traps and cervical spine. Benefit: Reduces "tech-neck" stiffness and improves range of motion for better posture.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex61: { name: 'Arm Circles', reps: 10, type: 'reps', description: 'Why: Mobilizes the shoulder capsule and opens the chest. Benefit: Counters the slumped-forward posture from desk work and improves overhead mobility.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex43: { name: 'Camel Cat', reps: 10, type: 'reps', description: 'Why: Flexes and extends the entire spine. Benefit: Lubricates vertebral discs and releases tension in the lower and middle back.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 2: Hip Mobility (Openers)
-  ex57: { name: 'Hip CARs', reps: 5, type: 'reps', description: 'Lubricates the hip joint after prolonged static sitting.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex23: { name: '90/90 Hip Rotations', reps: 60, type: 'time', description: 'Internal/external rotation mobility.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex20: { name: 'Hip Openers', reps: 8, type: 'reps', description: 'Reverses the tightening effects of sitting on the groin.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex57: { name: 'Hip CARs', reps: 5, type: 'reps', description: 'Why: Controlled Articular Rotations move the hip joint through its full range. Benefit: Improves joint health and identifies "sticky" spots in hip mobility.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex23: { name: '90/90 Hip Rotations', reps: 60, type: 'time', description: 'Why: Targets internal and external rotation of the femur. Benefit: Critical for hip health in runners and cyclists to prevent compensations in the knees.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex20: { name: 'Hip Openers', reps: 8, type: 'reps', description: 'Why: Stretches the adductors and deep hip flexors. Benefit: Reverses the shortening effects of prolonged sitting and improves stride length.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 3: Glute Activation
-  ex14: { name: 'Clamshells', reps: 20, type: 'reps', description: 'Glute medius activation (prevents knee valgus).', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex39: { name: 'Single-Leg Glute Bridge', reps: 15, type: 'reps', description: 'Glute max extension.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex18: { name: 'Banded Monster Walks', reps: 12, type: 'reps', description: 'Dynamic lateral stability.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex14: { name: 'Clamshells', reps: 20, type: 'reps', description: 'Why: Isolates the gluteus medius. Benefit: Essential for knee stability; prevents the "knee cave" (valgus) during running and cycling.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex39: { name: 'Single-Leg Glute Bridge', reps: 15, type: 'reps', description: 'Why: Teaches the glutes to extend the hip without using the lower back. Benefit: Improves running power and protects the lumbar spine from overworking.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex18: { name: 'Banded Monster Walks', reps: 12, type: 'reps', description: 'Why: Provides lateral resistance to the hip abductors. Benefit: Improves pelvic stability and single-leg balance during the running gait.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 4: Foot & Ankle Foundation
-  ex30: { name: 'Big Toe Dissociation', reps: 60, type: 'time', description: 'Foot control and arch function.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex38: { name: 'Short Foot Exercise', reps: 60, type: 'time', description: 'Intrinsinc foot strength.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex10: { name: 'Standing Calf Raises', reps: 30, type: 'time', description: 'Gastroc/Soleus strength.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex30: { name: 'Big Toe Dissociation', reps: 60, type: 'time', description: 'Why: Teaches independent control of the big toe. Benefit: The big toe is the anchor of the arch; strengthening it prevents overpronation and plantar fasciitis.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex38: { name: 'Short Foot Exercise', reps: 60, type: 'time', description: 'Why: Contracts the intrinsic muscles of the foot arch. Benefit: Builds a "stiff" foot for better energy return and impact absorption.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex10: { name: 'Standing Calf Raises', reps: 30, type: 'time', description: 'Why: Strengthens the gastrocnemius and soleus. Benefit: Increases ankle power for "push-off" and protects the Achilles tendon.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 5: Core Stability (Anti-Rotation)
-  ex04: { name: 'Dead Bug', reps: 10, type: 'reps', description: 'Anterior core stability.', image: 'https://www.docteur-fitness.com/wp-content/uploads/2022/11/dead-bug-meilleur-exercice-abdos.jpg' },
-  ex01: { name: 'Bird Dog', reps: 10, type: 'reps', description: 'Posterior oblique sling stability.', image: 'https://www.docteur-fitness.com/wp-content/uploads/2022/04/bird-dog.gif' },
-  ex35: { name: 'RNT with Band', reps: 15, type: 'reps', description: 'Reactive stability.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex04: { name: 'Dead Bug', reps: 10, type: 'reps', description: 'Why: Trains the core to remain stable while the limbs move. Benefit: Improves "pelvic tuck" and prevents lower back arching during high-fatigue running.', image: 'https://www.docteur-fitness.com/wp-content/uploads/2022/11/dead-bug-meilleur-exercice-abdos.jpg' },
+  ex01: { name: 'Bird Dog', reps: 10, type: 'reps', description: 'Why: Strengthens the posterior chain and cross-body stability. Benefit: Improves coordination and lumbar stability for a balanced, efficient stride.', image: 'https://www.docteur-fitness.com/wp-content/uploads/2022/04/bird-dog.gif' },
+  ex35: { name: 'RNT with Band', reps: 15, type: 'reps', description: 'Why: Reactive Neuromuscular Training forces the body to stabilize against a pull. Benefit: Automatically corrects movement patterns like knee instability.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 6: Lateral Stability
-  ex56: { name: 'Side Plank', reps: 30, type: 'time', description: 'Lateral core endurance.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex48: { name: 'Copenhagen Side Plank', reps: 30, type: 'time', description: 'Adductor/Groin strength.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex33: { name: 'Sidelying Hip Abduction', reps: 10, type: 'reps', description: 'Isolated glute med work.', image: 'https://iris.hattiesburgclinic.com/patadv/exkit/Tubing%20Exercises/Images/0210000209tl35m.png' },
+  ex56: { name: 'Side Plank', reps: 30, type: 'time', description: 'Why: Strengthens the obliques and quadratus lumborum. Benefit: Prevents "hip drop" during running, which causes IT band and knee issues.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex48: { name: 'Copenhagen Side Plank', reps: 30, type: 'time', description: 'Why: Specifically targets the hip adductors (inner thighs). Benefit: Critical for groin health and pelvic stability in multidirectional movements.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex33: { name: 'Sidelying Hip Abduction', reps: 10, type: 'reps', description: 'Why: Pure glute medius isolation. Benefit: The most direct way to strengthen the "hip levelers" that keep you stable on one leg.', image: 'https://iris.hattiesburgclinic.com/patadv/exkit/Tubing%20Exercises/Images/0210000209tl35m.png' },
 
   // Cycle 7: Linear Motion
-  ex11: { name: 'Leg Swings', reps: 12, type: 'reps', description: 'Dynamic hamstring/hip flexor ROM.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex25: { name: 'Inchworms', reps: 5, type: 'reps', description: 'Hamstring stretch + core activation.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex15: { name: 'Walking Quad Pulls', reps: 8, type: 'reps', description: 'Dynamic quad stretch.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex11: { name: 'Leg Swings', reps: 12, type: 'reps', description: 'Why: Dynamic stretch for the hamstrings and hip flexors. Benefit: Prepares the muscles for the full range of motion used in high-speed running.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex25: { name: 'Inchworms', reps: 5, type: 'reps', description: 'Why: Combines hamstring flexibility with shoulder and core stability. Benefit: Builds a "strong through length" posterior chain.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex15: { name: 'Walking Quad Pulls', reps: 8, type: 'reps', description: 'Why: Dynamic stretch for the quadriceps and psoas. Benefit: Opens the front of the body to allow for better hip extension in the running stride.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 8: Multi-Planar Motion
-  ex51: { name: "World's Greatest Stretch", reps: 5, type: 'reps', description: 'Full body mobility.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex54: { name: 'Walking Lunges with Rotation', reps: 8, type: 'reps', description: 'Thoracic mobility + lunge.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex41: { name: 'Walking Hamstring Reaches', reps: 8, type: 'reps', description: 'Dynamic posterior chain.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex51: { name: "World's Greatest Stretch", reps: 5, type: 'reps', description: 'Why: Hits the thoracic spine, hips, and hamstrings in one flow. Benefit: The "gold standard" for full-body mobility before any workout.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex54: { name: 'Walking Lunges with Rotation', reps: 8, type: 'reps', description: 'Why: Combines lower body strength with thoracic (mid-back) mobility. Benefit: Controls the rotation of the torso while the legs are under load.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex41: { name: 'Walking Hamstring Reaches', reps: 8, type: 'reps', description: 'Why: Dynamic posterior chain stretch. Benefit: Increases hamstring elasticity to prevent pulls and strains.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 9: Squat Pattern
-  ex06: { name: 'Bulgarian Split Squat', reps: 10, type: 'reps', description: 'Unilateral leg strength (King of runner exercises).', image: 'https://www.scienceforsport.com/wp-content/uploads/2023/12/Bulgarian_Split_Squat_1024x1024.webp' },
-  ex24: { name: 'Kettlebell Squat', reps: 15, type: 'reps', description: 'Bilateral load.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex32: { name: 'Wall Sit', reps: 40, type: 'time', description: 'Isometric endurance.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex06: { name: 'Bulgarian Split Squat', reps: 10, type: 'reps', description: 'Why: Intense unilateral leg strength. Benefit: Bridges the gap between bilateral strength and the single-leg demands of running.', image: 'https://www.scienceforsport.com/wp-content/uploads/2023/12/Bulgarian_Split_Squat_1024x1024.webp' },
+  ex24: { name: 'Kettlebell Squat', reps: 15, type: 'reps', description: 'Why: Fundamental bilateral lower body strength. Benefit: Builds overall force production in the quads and glutes.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex32: { name: 'Wall Sit', reps: 40, type: 'time', description: 'Why: Isometric endurance for the quadriceps. Benefit: Improves the muscle\'s ability to tolerate long-duration tension.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 10: Lunge Pattern
-  ex36: { name: 'Lunges (Backward/Forward)', reps: 12, type: 'reps', description: 'Deceleration and drive.', image: 'https://www.kindpng.com/picc/m/141-1415177_kettlebell-lunges-avatar-hd-png-download.png' },
-  ex07: { name: 'Lateral Lunges', reps: 10, type: 'reps', description: 'Frontal plane strength.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex22: { name: 'Step-Ups', reps: 15, type: 'reps', description: 'Hip extension power.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex36: { name: 'Lunges (Backward/Forward)', reps: 12, type: 'reps', description: 'Why: Trains deceleration and coordination. Benefit: Replicates the landing and push-off phases of the gait cycle.', image: 'https://www.kindpng.com/picc/m/141-1415177_kettlebell-lunges-avatar-hd-png-download.png' },
+  ex07: { name: 'Lateral Lunges', reps: 10, type: 'reps', description: 'Why: Strengthens the legs in the frontal plane. Benefit: Prevents injuries by strengthening muscles often neglected in pure forward motion sports.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex22: { name: 'Step-Ups', reps: 15, type: 'reps', description: 'Why: Pure hip extension power against gravity. Benefit: Directly translates to climbing hills and stairs with power.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 11: Hinge Pattern (Posterior Chain)
-  ex16: { name: 'Romanian Deadlift', reps: 12, type: 'reps', description: 'Hamstring/Glute hinge.', image: 'https://burnfit.io/wp-content/uploads/2023/11/KB_SM_DL.gif' },
-  ex45: { name: 'Single-Leg Deadlift', reps: 10, type: 'reps', description: 'Balance + Hinge.', image: 'https://cdn.jefit.com/assets/img/exercises/gifs/482.gif' },
-  ex26: { name: 'Hamstrings Curl', reps: 10, type: 'reps', description: 'Knee flexion strength.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex16: { name: 'Romanian Deadlift', reps: 12, type: 'reps', description: 'Why: Trains the "hip hinge" and strengthens the hamstrings. Benefit: Builds a powerful posterior chain that protects the knees.', image: 'https://burnfit.io/wp-content/uploads/2023/11/KB_SM_DL.gif' },
+  ex45: { name: 'Single-Leg Deadlift', reps: 10, type: 'reps', description: 'Why: Combines the hinge pattern with extreme balance. Benefit: Critical for stabilizing the ankle and hip while generating power on one leg.', image: 'https://cdn.jefit.com/assets/img/exercises/gifs/482.gif' },
+  ex26: { name: 'Hamstrings Curl', reps: 10, type: 'reps', description: 'Why: Isolated knee flexion strength. Benefit: Balances the quads to prevent muscular imbalances that lead to knee pain.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 12: Plyometrics (Power)
-  ex19: { name: 'Single Leg Hops', reps: 10, type: 'reps', description: 'Stiffness and reactivity.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex13: { name: 'Squat Jumps', reps: 10, type: 'reps', description: 'Vertical power.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex17: { name: 'Jumping Lunges', reps: 10, type: 'reps', description: 'Split stance power.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex19: { name: 'Single Leg Hops', reps: 10, type: 'reps', description: 'Why: Trains "stiffness" in the lower leg and ankle. Benefit: Improves running economy by making your feet more like springs.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex13: { name: 'Squat Jumps', reps: 10, type: 'reps', description: 'Why: Develops explosive power in the lower body. Benefit: Increases your "ceiling" for power production and fast-twitch fiber recruitment.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex17: { name: 'Jumping Lunges', reps: 10, type: 'reps', description: 'Why: Explosive power from a split-stance position. Benefit: Improves stability and power during high-speed directional changes.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 13: Upper Body (Runner's Carriage)
-  ex08: { name: 'Push-ups', reps: 15, type: 'reps', description: 'Core & Push strength.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex42: { name: 'One Arm Rows', reps: 12, type: 'reps', description: 'Scapular stability (posture).', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex46: { name: 'Dips', reps: 12, type: 'reps', description: 'Triceps/Shoulder stability.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex08: { name: 'Push-ups', reps: 15, type: 'reps', description: 'Why: Overall upper body and core stability. Benefit: A strong upper body maintains form and prevents fatigue-related slouching in long runs.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex42: { name: 'One Arm Rows', reps: 12, type: 'reps', description: 'Why: Strengthens the mid-back and rhomboids. Benefit: Reverses desk-job posture and improves the "arm drive" during running.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex46: { name: 'Dips', reps: 12, type: 'reps', description: 'Why: Strengthens the triceps and stabilizes the shoulder. Benefit: Complements the pulling muscles to ensure balanced upper body tension.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 14: Single Leg Control
-  ex12: { name: 'Hip Airplanes', reps: 6, type: 'reps', description: 'Hip stability and rotation control.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex58: { name: 'Lateral Step-Downs', reps: 12, type: 'reps', description: 'Eccentric quad/glute control (prevents hip drop).', image: 'https://s3.amazonaws.com/prod.skimble/assets/1310820/image_iphone.jpg' },
-  ex03: { name: 'Single-leg Balance', reps: 30, type: 'time', description: 'Proprioception.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex12: { name: 'Hip Airplanes', reps: 6, type: 'reps', description: 'Why: Trains rotational control of the hip on a stable leg. Benefit: The ultimate "prehab" for hip stability and pelvic alignment.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex58: { name: 'Lateral Step-Downs', reps: 12, type: 'reps', description: 'Why: Eccentric control of the knee and hip. Benefit: Specifically prevents "runner\'s knee" by training the glutes to control the knee\'s path.', image: 'https://s3.amazonaws.com/prod.skimble/assets/1310820/image_iphone.jpg' },
+  ex03: { name: 'Single-leg Balance', reps: 30, type: 'time', description: 'Why: Proprioceptive training for the foot and ankle. Benefit: Reduces the risk of ankle sprains by improving the body\'s awareness of joint position.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 15: Foam Rolling (Tissue Quality)
-  ex09: { name: 'Foam Rolling Quad', reps: 60, type: 'time', description: 'Anterior release.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex59: { name: 'Foam Rolling Hamstrings', reps: 60, type: 'time', description: 'Releases tension from chair compression (anti-sit).', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex21: { name: 'Foam Rolling Calf', reps: 60, type: 'time', description: 'Lower leg release.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex09: { name: 'Foam Rolling Quad', reps: 60, type: 'time', description: 'Why: Myofascial release for the front of the thigh. Benefit: Reduces muscle tightness and improves blood flow to recovery areas.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex59: { name: 'Foam Rolling Hamstrings', reps: 60, type: 'time', description: 'Why: Myofascial release for the back of the thigh. Benefit: Relieves pressure on the lower back caused by tight hamstrings.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex21: { name: 'Foam Rolling Calf', reps: 60, type: 'time', description: 'Why: Myofascial release for the lower leg. Benefit: Prevents calf cramps and reduces tension on the Achilles tendon.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 16: Deep Stretching (Static Anti-Sit)
-  ex37: { name: 'Psoas Stretch', reps: 6, type: 'reps', description: 'Critical: Opens deep hip flexors shortened by sitting.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex28: { name: 'Figure 4 Stretch', reps: 30, type: 'time', description: 'Glute/Piriformis release (sciatica prevention).', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex27: { name: 'Torso Rotations', reps: 10, type: 'reps', description: 'Lumbar re-set for lower back health.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex37: { name: 'Psoas Stretch', reps: 6, type: 'reps', description: 'Why: Targets the deep hip flexor that pulls the spine forward. Benefit: The single most important stretch for reversing the "sitting" posture.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex28: { name: 'Figure 4 Stretch', reps: 30, type: 'time', description: 'Why: Releases the piriformis and external rotators of the hip. Benefit: Relieves pressure on the sciatic nerve and improves hip comfort.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex27: { name: 'Torso Rotations', reps: 10, type: 'reps', description: 'Why: Restores rotation to the lumbar and thoracic spine. Benefit: "Defrags" the spine after a long day of static sitting.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
 
   // Cycle 17: Feet & Calves Recovery
-  ex47: { name: 'Banded Ankle Mobilisation', reps: 60, type: 'time', description: 'Dorsiflexion restoration.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex60: { name: 'Heel-toe Walks', reps: 15, type: 'reps', description: 'Ankle coordination.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
-  ex31: { name: 'Ankle Circles', reps: 10, type: 'reps', description: 'Flush joints.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' }
+  ex47: { name: 'Banded Ankle Mobilisation', reps: 60, type: 'time', description: 'Why: Uses a band to pull the talus bone back. Benefit: Directly improves "ankle dorsiflexion" (the ability to pull the toes up), which is crucial for a healthy stride.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex60: { name: 'Heel-toe Walks', reps: 15, type: 'reps', description: 'Why: Trains the coordination of the lower leg muscles. Benefit: Strengthens the tibialis anterior and calves for improved foot landing.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' },
+  ex31: { name: 'Ankle Circles', reps: 10, type: 'reps', description: 'Why: Improves synovial fluid flow in the ankle joint. Benefit: Reduces morning stiffness and improves joint health.', image: 'https://cdn-icons-png.flaticon.com/512/680/680598.png' }
 };
 
 // This is the working catalog that will be used
