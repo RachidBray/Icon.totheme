@@ -1,23 +1,28 @@
 :root {
     /* --- Dark Theme Palette --- */
-    --bg-color: #050505;          /* Almost black */
-    --card-bg: #1A1A1A;           /* Dark grey card */
+    --bg-color: #050505;
+    /* Almost black */
+    --card-bg: #1A1A1A;
+    /* Dark grey card */
     --text-primary: #FFFFFF;
     --text-secondary: #888888;
-    
+
     /* --- Accents --- */
-    --accent-primary: #FFFFFF;    /* Bold white for primary actions */
+    --accent-primary: #FFFFFF;
+    /* Bold white for primary actions */
     --accent-glow: rgba(255, 255, 255, 0.1);
-    
+
     /* --- Functional Colors --- */
-    --btn-complete: #6366f1;      /* Indigo button */
+    --btn-complete: #6366f1;
+    /* Indigo button */
     --btn-complete-text: #FFFFFF;
     --btn-complete-hover: #4f46e5;
 
-    --btn-action: #000000;        /* Black button */
+    --btn-action: #000000;
+    /* Black button */
     --btn-action-text: #888888;
     --btn-action-border: #333333;
-    
+
     /* --- Typography --- */
     --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -34,15 +39,21 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 * {
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     overflow: hidden;
     margin: 0;
@@ -100,7 +111,7 @@ body.loaded {
     background: var(--card-bg);
     border-radius: 24px;
     padding: 40px 30px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     border: 1px solid #333;
     transition: transform 0.3s ease;
     display: flex;
@@ -151,6 +162,105 @@ body.loaded {
     border-radius: 20px;
     object-fit: cover;
     background: #000;
+}
+
+/* --- Hadith Display --- */
+.exercise-hadith {
+    width: 100%;
+    max-width: 500px;
+    height: 350px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #1e1e1e, #111);
+    border: 1px solid #333;
+    padding: 30px;
+    display: block;
+    text-align: right;
+    direction: rtl;
+    font-family: 'Amiri', 'Georgia', serif;
+    font-size: 1.25rem;
+    line-height: 1.8;
+    color: #e0e0e0;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #444 transparent;
+    margin-bottom: 20px;
+}
+
+.exercise-hadith::-webkit-scrollbar {
+    width: 6px;
+}
+
+.exercise-hadith::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 10px;
+}
+
+/* --- Info Trigger & Tooltip --- */
+.exercise-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.info-trigger {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+    color: #888;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.info-trigger:hover {
+    background: #444;
+    color: #FFF;
+}
+
+.description-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2a2a2a;
+    border: 1px solid #444;
+    padding: 20px;
+    border-radius: 12px;
+    width: 280px;
+    z-index: 50;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    font-size: 0.9rem;
+    color: #CCC;
+    text-align: left;
+}
+
+.description-tooltip.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }
 
 /* Exercise Stats (Reps/Time) */
@@ -266,7 +376,8 @@ body.loaded {
     gap: 12px;
 }
 
-.postpone-button, .skip-button {
+.postpone-button,
+.skip-button {
     background: transparent;
     color: var(--btn-action-text);
     border: 1px solid var(--btn-action-border);
@@ -275,7 +386,8 @@ body.loaded {
     padding: 12px;
 }
 
-.postpone-button:hover, .skip-button:hover {
+.postpone-button:hover,
+.skip-button:hover {
     border-color: #666;
     color: #FFF;
     background: #111;
@@ -307,9 +419,11 @@ body.loaded {
 
 .catalog-box {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.95);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(10px);
     padding: 30px;
     z-index: 100;
@@ -340,7 +454,10 @@ body.loaded {
     cursor: pointer;
     transition: color 0.2s;
 }
-.reset:hover { color: #F00; }
+
+.reset:hover {
+    color: #F00;
+}
 
 .close-button {
     color: #FFF;
@@ -371,7 +488,9 @@ dt[data-item="name"] {
 /* --- Debug Bar --- */
 #debug-bar {
     position: fixed;
-    bottom: 0; left: 0; width: 100%;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     background: #000;
     color: #444;
     font-size: 10px;
