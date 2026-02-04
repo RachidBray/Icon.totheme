@@ -586,16 +586,15 @@ function displayExercise() {
         <div class="exercise-name">${exercise.name}</div>
         <button class="info-trigger" data-id="${exercise.id}">?</button>
         <div id="tooltip-${exercise.id}" class="description-tooltip">
-          ${exercise.description}
+          ${exercise.reps || exercise.type ? `
+            <div class="exercise-stats">
+              <span class="exercise-meta">${repsDisplay}</span>
+              <span class="multiplier">${multiplierStr}</span>
+            </div>
+          ` : ''}
+          <div class="exercise-description">${exercise.description}</div>
         </div>
       </div>`;
-
-      if (exercise.reps || exercise.type) {
-        exerciseContent += `<div class="exercise-stats">
-          <span class="exercise-meta">${repsDisplay}</span>
-          <span class="multiplier">${multiplierStr}</span>
-        </div>`;
-      }
 
       exerciseContent += '</div>'; // .exercise-item
     });

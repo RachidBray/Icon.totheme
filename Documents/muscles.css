@@ -263,33 +263,37 @@ body.loaded {
     }
 }
 
-/* Exercise Stats (Reps/Time) */
-.exercise-meta {
-    font-size: 4rem;
-    font-weight: 800;
-    line-height: 1;
-    color: var(--text-primary);
-    font-variant-numeric: tabular-nums;
-    margin-bottom: 5px;
+/* Exercise Stats (Reps/Time) - Tooltip Version */
+.description-tooltip .exercise-stats {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 8px 12px;
     display: block;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.multiplier {
-    font-size: 1rem;
-    color: var(--text-secondary);
+.description-tooltip .exercise-meta {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #FFF;
+    font-variant-numeric: tabular-nums;
+    display: inline-block;
+}
+
+.description-tooltip .multiplier {
+    font-size: 0.8rem;
+    color: #888;
     font-weight: 600;
     text-transform: uppercase;
     margin-left: 5px;
+    display: inline-block;
 }
 
-/* Exercise Stats Container */
+/* Legacy stats container - hidden or adjusted if still used elsewhere */
 .exercise-stats {
-    background: rgba(99, 102, 241, 0.05);
-    border-radius: 8px;
-    padding: 10px 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    display: inline-block;
-    margin-bottom: 10px;
+    display: none;
 }
 
 /* Exercise Name */
