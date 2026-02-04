@@ -555,7 +555,13 @@ function displayExercise() {
   const allKeys = getCatalogKeys();
 
   let exerciseContent = '<div class="exercise-content">';
-  exerciseContent += `<div class="progress-indicator">مجموعة ${currentExerciseIndex + 1} من ${totalGroups}</div>`;
+
+  exerciseContent += `
+    <div class="exercise-top-bar">
+      <div class="progress-indicator">مجموعة ${currentExerciseIndex + 1} من ${totalGroups}</div>
+      <button id="complete-btn" class="action-button complete-button">أنهيت</button>
+    </div>
+  `;
 
   if (currentGroup.length === 0) {
     exerciseContent += '<div class="exercise-empty">No exercises configured. Add some in settings.</div>';
@@ -603,14 +609,6 @@ function displayExercise() {
   }
 
   exerciseContent += '</div>'; // .exercise-content
-
-  exerciseContent += `
-    <div class="action-buttons">
-      <button id="complete-btn" class="action-button complete-button">
-        أنهيت
-      </button>
-    </div>
-  `;
 
   displayBox.innerHTML = exerciseContent;
   addActionButtonListeners();
