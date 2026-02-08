@@ -331,8 +331,15 @@ body.loaded {
     align-items: center;
     width: 100%;
     margin-bottom: 30px;
-    padding-bottom: 15px;
+    padding: 15px 25px;
+    background: rgba(255, 255, 255, 0.03);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px 12px 0 0;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 12px;
 }
 
 .progress-indicator {
@@ -360,17 +367,32 @@ body.loaded {
     margin: 0;
 }
 
-/* Complete Button (Hero) */
-.complete-button {
+/* Next Button (Hero) */
+.next-button {
     background: var(--btn-complete);
     color: var(--btn-complete-text);
     border: none
 }
 
-.complete-button:hover {
+.next-button:hover {
     background: var(--btn-complete-hover);
     transform: translateY(-2px);
     border-color: #666;
+}
+
+.prev-button {
+    background: rgba(255, 255, 255, 0.05);
+    color: #888;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    text-transform: uppercase;
+}
+
+.prev-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFF;
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Secondary Buttons */

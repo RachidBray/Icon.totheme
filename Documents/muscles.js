@@ -541,6 +541,35 @@ function completeCurrentExercise() {
   }
 }
 
+function previousExerciseGroup() {
+  const totalGroups = getTotalGroups();
+  currentExerciseIndex--;
+  if (currentExerciseIndex < 0) {
+    currentExerciseIndex = totalGroups - 1;
+  }
+  saveState();
+
+  // Fade out current content
+  const currentContent = document.querySelector('.exercise-content');
+  if (currentContent) {
+    currentContent.style.opacity = '0';
+    setTimeout(() => {
+      displayExercise();
+      // Fade in new content
+      setTimeout(() => {
+        const newContent = document.querySelector('.exercise-content');
+        if (newContent) newContent.style.opacity = '1';
+      }, 10);
+    }, 300);
+  } else {
+    displayExercise();
+    setTimeout(() => {
+      const newContent = document.querySelector('.exercise-content');
+      if (newContent) newContent.style.opacity = '1';
+    }, 10);
+  }
+}
+
 function displayExercise() {
   const currentGroup = getCurrentExerciseGroup();
   const totalGroups = getTotalGroups();
@@ -551,7 +580,10 @@ function displayExercise() {
   exerciseContent += `
     <div class="exercise-top-bar">
       <div class="progress-indicator">مجموعة ${currentExerciseIndex + 1} من ${totalGroups}</div>
-      <button id="complete-btn" class="action-button complete-button">التالي</button>
+      <div class="nav-actions">
+        <button id="prev-btn" class="action-button prev-button">السابق</button>
+        <button id="next-btn" class="action-button next-button">التالي</button>
+      </div>
     </div>
   `;
 
@@ -607,16 +639,23 @@ function displayExercise() {
 }
 
 function addActionButtonListeners() {
-  const completeBtn = document.getElementById('complete-btn');
-
-  if (completeBtn) {
-    // Clone and replace is a good way to remove old listeners
-    const newBtn = completeBtn.cloneNode(true);
-    completeBtn.parentNode.replaceChild(newBtn, completeBtn);
-    newBtn.addEventListener('click', function () {
-      newBtn.innerHTML = '<div class="spinner"></div>';
-      newBtn.disabled = true;
+  const nextBtn = document.getElementById('next-btn');
+  if (nextBtn) {
+    const newNextBtn = nextBtn.cloneNode(true);
+    nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+    newNextBtn.addEventListener('click', function () {
+      newNextBtn.innerHTML = '<div class="spinner"></div>';
+      newNextBtn.disabled = true;
       completeCurrentExercise();
+    });
+  }
+
+  const prevBtn = document.getElementById('prev-btn');
+  if (prevBtn) {
+    const newPrevBtn = prevBtn.cloneNode(true);
+    prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+    newPrevBtn.addEventListener('click', function () {
+      previousExerciseGroup();
     });
   }
 
