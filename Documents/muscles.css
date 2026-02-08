@@ -140,10 +140,7 @@ body.loaded {
     align-items: stretch;
 }
 
-.exercise-column-right .exercise-hadith {
-    height: 100%;
-    margin-bottom: 0;
-}
+
 
 /* Exercise Title Row - Name + Stats inline */
 .exercise-title-row {
@@ -260,7 +257,7 @@ body.loaded {
 .exercise-hadith {
     width: 100%;
     max-width: 500px;
-    height: 350px;
+    height: 420px;
     border-radius: 20px;
     background: linear-gradient(135deg, #1e1e1e, #111);
     border: 1px solid #333;
