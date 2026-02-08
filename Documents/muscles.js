@@ -409,14 +409,36 @@ if (resetButton) {
   });
 }
 
-function getWeekStats() {
+function getStartOfWeek(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  // Monday is start of week (1), Sunday is 0
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+function checkWeeklyReset() {
+  if (exerciseHistory.length === 0) return;
+
   const now = new Date();
-  const startOfWeek = new Date(now);
-  // Set to Monday
-  const day = startOfWeek.getDay();
-  const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-  startOfWeek.setDate(diff);
-  startOfWeek.setHours(0, 0, 0, 0);
+  const currentStartOfWeek = getStartOfWeek(now);
+
+  // Look at the latest history entry
+  const lastEntry = exerciseHistory[exerciseHistory.length - 1];
+  const lastEntryStartOfWeek = getStartOfWeek(new Date(lastEntry.timestamp));
+
+  if (currentStartOfWeek > lastEntryStartOfWeek) {
+    console.log('New week detected. Resetting completions and history.');
+    exerciseCompleted = {};
+    exerciseHistory = [];
+    saveState();
+  }
+}
+
+function getWeekStats() {
+  const startOfWeekTime = getStartOfWeek(new Date());
 
   const stats = {
     totalCompletions: 0,
@@ -424,7 +446,7 @@ function getWeekStats() {
   };
 
   exerciseHistory.forEach(entry => {
-    if (entry.timestamp >= startOfWeek.getTime()) {
+    if (entry.timestamp >= startOfWeekTime) {
       stats.totalCompletions++;
       stats.groupCounts[entry.groupIndex] = (stats.groupCounts[entry.groupIndex] || 0) + 1;
     }
@@ -783,7 +805,9 @@ document.addEventListener('click', () => {
 async function init() {
   // 1. Load state FIRST, before any other logic.
   await loadState();
-  // 2. Validate catalog size and index
+  // 2. Check for weekly reset before rendering
+  checkWeeklyReset();
+  // 3. Validate catalog size and index
   validateCatalog();
   // 3. Display the exercise based on the loaded index
   displayExercise();
