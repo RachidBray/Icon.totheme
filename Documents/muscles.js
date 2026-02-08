@@ -813,8 +813,11 @@ function displayExercise() {
   if (currentGroup.length === 0) {
     exerciseContent += '<div class="exercise-empty">No exercises configured. Add some in settings.</div>';
   } else {
-    exerciseContent += '<div class="exercise-list">';
+    // Two-column layout: exercises left, hadith right
+    exerciseContent += '<div class="exercise-layout">';
 
+    // Left column: exercises
+    exerciseContent += '<div class="exercise-column-left">';
     currentGroup.forEach((exercise, index) => {
       const sequenceNumber = currentExerciseIndex * EXERCISES_PER_BREAK + index + 1;
       const multiplierStr = exercise.type === 'time' ? 'ثانية' : 'تكرار';
@@ -822,19 +825,6 @@ function displayExercise() {
 
       exerciseContent += '<div class="exercise-item">';
       exerciseContent += `<div class="exercise-sequence">${sequenceNumber} / ${allKeys.length}</div>`;
-
-      if (exercise.image) {
-        if (exercise.image.startsWith('http')) {
-          exerciseContent += `<div class="exercise-image">
-            <img src="${exercise.image}" alt="${exercise.name}">
-          </div>`;
-        } else {
-          exerciseContent += `<div class="exercise-hadith">
-            ${exercise.image}
-          </div>`;
-        }
-      }
-
       exerciseContent += `<div class="exercise-header">
         <div class="exercise-name">${exercise.name}</div>
         <button class="info-trigger" data-id="${exercise.id}">?</button>
@@ -848,11 +838,21 @@ function displayExercise() {
           <div class="exercise-description">${exercise.description}</div>
         </div>
       </div>`;
-
       exerciseContent += '</div>'; // .exercise-item
     });
+    exerciseContent += '</div>'; // .exercise-column-left
 
-    exerciseContent += '</div>'; // .exercise-list
+    // Right column: single hadith (from first exercise)
+    const firstExercise = currentGroup[0];
+    if (firstExercise && firstExercise.image && !firstExercise.image.startsWith('http')) {
+      exerciseContent += `<div class="exercise-column-right">
+        <div class="exercise-hadith">
+          ${firstExercise.image}
+        </div>
+      </div>`;
+    }
+
+    exerciseContent += '</div>'; // .exercise-layout
   }
 
   exerciseContent += '</div>'; // .exercise-content
