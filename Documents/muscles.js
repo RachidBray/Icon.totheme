@@ -19,9 +19,11 @@ if (!document.querySelector('.settings-button')) {
   // Add event listener to show/hide the catalog box
   settingsButton.addEventListener('click', function () {
     if (catalogBox.style.display === 'none') {
-      catalogBox.style.display = 'block'; // CSS handles positioning
+      catalogBox.style.display = 'block';
+      document.body.classList.add('modal-open');
     } else {
       catalogBox.style.display = 'none';
+      document.body.classList.remove('modal-open');
     }
   });
 }
@@ -38,8 +40,10 @@ if (!document.querySelector('.stats-button')) {
     if (statsBox.style.display === 'none') {
       displayStats();
       statsBox.style.display = 'block';
+      document.body.classList.add('modal-open');
     } else {
       statsBox.style.display = 'none';
+      document.body.classList.remove('modal-open');
     }
   });
 }
@@ -382,6 +386,8 @@ function getTotalGroups() {
   return Math.ceil(keys.length / EXERCISES_PER_BREAK);
 }
 
+
+
 function validateCatalog() {
   const keys = getCatalogKeys();
   if (keys.length === 0) {
@@ -471,6 +477,7 @@ function displayStats() {
     closeButton.className = 'close-button';
     closeButton.addEventListener('click', function () {
       statsBox.style.display = 'none';
+      document.body.classList.remove('modal-open');
     });
     statsBox.querySelector('.stats-header').appendChild(closeButton);
   }
@@ -497,7 +504,27 @@ function displayStats() {
   }
 
   html += '</div>';
+
+  // Add reset stats button
+  html += `
+    <button id="reset-stats-btn" class="action-button reset-stats-button">إعادة تعيين الإحصائيات</button>
+  `;
+
   statsContent.innerHTML = html;
+
+  // Wire up reset button
+  const resetStatsBtn = document.getElementById('reset-stats-btn');
+  if (resetStatsBtn) {
+    resetStatsBtn.addEventListener('click', function () {
+      if (confirm('هل أنت متأكد من إعادة تعيين جميع الإحصائيات؟ لا يمكن التراجع عن هذا الإجراء.')) {
+        exerciseHistory = [];
+        exerciseCompleted = {};
+        saveState();
+        displayStats(); // Refresh the stats display
+        displayExercise(); // Update main UI
+      }
+    });
+  }
 }
 
 // Create HTML elements for catalog
@@ -506,16 +533,29 @@ function displayCatalog() {
   let existingDls = catalogBox.querySelectorAll('dl');
   existingDls.forEach(el => el.remove());
 
-  // Check if close button exists, if not create it
-  if (!catalogBox.querySelector('.close-button')) {
+  // Check if header actions exist, if not create them
+  let header = catalogBox.querySelector('.catalog-header');
+  let actions = header.querySelector('.modal-header-actions');
+
+  if (!actions) {
+    actions = document.createElement('div');
+    actions.className = 'modal-header-actions';
+
+    // Move reset button into actions if it exists
+    let resetButton = header.querySelector('.reset');
+    if (resetButton) actions.appendChild(resetButton);
+
+    // Create close button
     let closeButton = document.createElement('button');
     closeButton.innerHTML = '×';
     closeButton.className = 'close-button';
     closeButton.addEventListener('click', function () {
       catalogBox.style.display = 'none';
+      document.body.classList.remove('modal-open');
     });
-    // Append to the header instead of the box root
-    catalogBox.querySelector('.catalog-header').appendChild(closeButton);
+    actions.appendChild(closeButton);
+
+    header.appendChild(actions);
   }
 
   const keys = getCatalogKeys();
@@ -611,11 +651,9 @@ function getCurrentExerciseGroup() {
   return group;
 }
 
-function completeCurrentExercise() {
+function recordCompletion() {
   const keys = getCatalogKeys();
-  if (keys.length === 0) {
-    return;
-  }
+  if (keys.length === 0) return false;
 
   const startIndex = currentExerciseIndex * EXERCISES_PER_BREAK;
   for (let i = 0; i < EXERCISES_PER_BREAK; i++) {
@@ -630,13 +668,58 @@ function completeCurrentExercise() {
     groupIndex: currentExerciseIndex
   });
 
-  currentExerciseIndex++;
+  saveState();
+  return true;
+}
+
+function removeLastCompletion() {
+  const keys = getCatalogKeys();
+  if (keys.length === 0) return false;
+
+  // Find the last index in history for this group
+  let lastIdx = -1;
+  for (let i = exerciseHistory.length - 1; i >= 0; i--) {
+    // Use loose equality to match string/number indices
+    if (exerciseHistory[i].groupIndex == currentExerciseIndex) {
+      lastIdx = i;
+      break;
+    }
+  }
+
+  if (lastIdx !== -1) {
+    exerciseHistory.splice(lastIdx, 1);
+  }
+
+  // Always check and clear completion status for the current group
+  // This handles both normal undo and "healing" desynchronized state
+  const startIndex = currentExerciseIndex * EXERCISES_PER_BREAK;
+  let clearedAny = false;
+
+  for (let i = 0; i < EXERCISES_PER_BREAK; i++) {
+    const key = keys[startIndex + i];
+    if (!key) break;
+    if (exerciseCompleted[key]) {
+      delete exerciseCompleted[key];
+      clearedAny = true;
+    }
+  }
+
+  // If we either removed history OR cleared completion flags, we consider it a success
+  if (lastIdx !== -1 || clearedAny) {
+    saveState();
+    return true;
+  }
+
+  return false;
+}
+
+function nextExerciseGroup() {
   const totalGroups = getTotalGroups();
+  currentExerciseIndex++;
   if (currentExerciseIndex >= totalGroups) {
     currentExerciseIndex = 0;
   }
-
-  saveState(); // Saves the NEXT group index
+  saveState();
 
   // Fade out current content
   const currentContent = document.querySelector('.exercise-content');
@@ -695,12 +778,22 @@ function displayExercise() {
 
   let exerciseContent = '<div class="exercise-content">';
 
+  // Check completion in history OR in completion map (fallback/legacy/desync)
+  const startIndex = currentExerciseIndex * EXERCISES_PER_BREAK;
+  const firstKey = allKeys[startIndex];
+  const iscompletedInMap = firstKey && exerciseCompleted[firstKey];
+  const isGroupCompleted = exerciseHistory.some(entry => entry.groupIndex == currentExerciseIndex) || iscompletedInMap;
+
+  const doneBtnText = isGroupCompleted ? 'تراجع' : 'تم الإنجاز';
+  const doneBtnClass = isGroupCompleted ? 'action-button done-button completed' : 'action-button done-button';
+
   exerciseContent += `
     <div class="exercise-top-bar">
       <div class="progress-indicator">مجموعة ${currentExerciseIndex + 1} من ${totalGroups}</div>
       <div class="nav-actions">
-        <button id="prev-btn" class="action-button prev-button">السابق</button>
-        <button id="next-btn" class="action-button next-button">التالي</button>
+        <button id="prev-btn" class="action-button prev-button" title="السابق">السابق</button>
+        <button id="done-btn" class="${doneBtnClass}" title="${doneBtnText}">${doneBtnText}</button>
+        <button id="next-btn" class="action-button next-button" title="التالي">التالي</button>
       </div>
     </div>
   `;
@@ -762,9 +855,7 @@ function addActionButtonListeners() {
     const newNextBtn = nextBtn.cloneNode(true);
     nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
     newNextBtn.addEventListener('click', function () {
-      newNextBtn.innerHTML = '<div class="spinner"></div>';
-      newNextBtn.disabled = true;
-      completeCurrentExercise();
+      nextExerciseGroup();
     });
   }
 
@@ -774,6 +865,40 @@ function addActionButtonListeners() {
     prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
     newPrevBtn.addEventListener('click', function () {
       previousExerciseGroup();
+    });
+  }
+
+  const doneBtn = document.getElementById('done-btn');
+  if (doneBtn) {
+    const newDoneBtn = doneBtn.cloneNode(true);
+    doneBtn.parentNode.replaceChild(newDoneBtn, doneBtn);
+    newDoneBtn.addEventListener('click', function () {
+      const isCompleted = newDoneBtn.classList.contains('completed');
+
+      if (isCompleted) {
+        // UNDO Logic
+        if (removeLastCompletion()) {
+          newDoneBtn.innerHTML = 'تم الإنجاز';
+          newDoneBtn.classList.remove('completed');
+          newDoneBtn.title = 'تم الإنجاز';
+        }
+      } else {
+        // DONE Logic
+        newDoneBtn.innerHTML = '<div class="spinner"></div>';
+        newDoneBtn.disabled = true;
+
+        if (recordCompletion()) {
+          setTimeout(() => {
+            newDoneBtn.innerHTML = 'تراجع';
+            newDoneBtn.classList.add('completed');
+            newDoneBtn.disabled = false;
+            newDoneBtn.title = 'تراجع';
+          }, 500);
+        } else {
+          newDoneBtn.disabled = false;
+          newDoneBtn.innerHTML = 'تم الإنجاز';
+        }
+      }
     });
   }
 

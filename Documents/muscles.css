@@ -340,7 +340,8 @@ body.loaded {
 
 .nav-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
+    align-items: center;
 }
 
 .progress-indicator {
@@ -368,19 +369,8 @@ body.loaded {
     margin: 0;
 }
 
-/* Next Button (Hero) */
-.next-button {
-    background: var(--btn-complete);
-    color: var(--btn-complete-text);
-    border: none
-}
-
-.next-button:hover {
-    background: var(--btn-complete-hover);
-    transform: translateY(-2px);
-    border-color: #666;
-}
-
+/* Next/Prev Buttons (Browsing) */
+.next-button,
 .prev-button {
     background: rgba(255, 255, 255, 0.05);
     color: #888;
@@ -390,10 +380,33 @@ body.loaded {
     text-transform: uppercase;
 }
 
+.next-button:hover,
 .prev-button:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #FFF;
     border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Done Button (Action) */
+.done-button {
+    background: var(--btn-complete);
+    color: var(--btn-complete-text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 25px;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+}
+
+.done-button:hover {
+    background: var(--btn-complete-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+}
+
+.done-button.completed {
+    background: #27ae60;
+    border-color: #2ecc71;
 }
 
 /* Secondary Buttons */
@@ -439,6 +452,13 @@ body.loaded {
     z-index: 1000;
 }
 
+.modal-open .settings-button,
+.modal-open .stats-button {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
 .settings-button {
     right: 20px;
 }
@@ -477,6 +497,7 @@ body.loaded {
     margin-bottom: 30px;
     border-bottom: 1px solid #222;
     padding-bottom: 15px;
+    position: relative;
 }
 
 .stats-title {
@@ -540,6 +561,23 @@ body.loaded {
     font-size: 0.8rem;
 }
 
+/* Reset Stats Button */
+.reset-stats-button {
+    width: 100%;
+    margin-top: 30px;
+    background: transparent;
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+}
+
+.reset-stats-button:hover {
+    background: rgba(231, 76, 60, 0.1);
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
 .catalog-box {
     position: absolute;
     top: 0;
@@ -585,19 +623,31 @@ body.loaded {
     color: #F00;
 }
 
+.modal-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
 .close-button {
     color: #FFF;
-    font-size: 2.2rem;
-    background: none;
-    border: none;
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     cursor: pointer;
-    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    margin-top: -5px;
-    /* Visual center adjustment */
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #FFF;
 }
 
 /* Catalog Items */
