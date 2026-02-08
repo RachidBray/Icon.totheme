@@ -512,16 +512,28 @@ function displayStats() {
 
   statsContent.innerHTML = html;
 
-  // Wire up reset button
+  // Wire up reset button with two-click confirmation
   const resetStatsBtn = document.getElementById('reset-stats-btn');
   if (resetStatsBtn) {
     resetStatsBtn.addEventListener('click', function () {
-      if (confirm('هل أنت متأكد من إعادة تعيين جميع الإحصائيات؟ لا يمكن التراجع عن هذا الإجراء.')) {
+      if (this.classList.contains('confirm-pending')) {
+        // Second click - actually reset
         exerciseHistory = [];
         exerciseCompleted = {};
         saveState();
         displayStats(); // Refresh the stats display
         displayExercise(); // Update main UI
+      } else {
+        // First click - show confirmation state
+        this.classList.add('confirm-pending');
+        this.innerHTML = 'اضغط مرة أخرى للتأكيد';
+        // Auto-reset after 3 seconds if not confirmed
+        setTimeout(() => {
+          if (this.classList.contains('confirm-pending')) {
+            this.classList.remove('confirm-pending');
+            this.innerHTML = 'إعادة تعيين الإحصائيات';
+          }
+        }, 3000);
       }
     });
   }
