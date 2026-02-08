@@ -48,7 +48,7 @@ if (!document.querySelector('.stats-button')) {
   });
 }
 
-const EXERCISES_PER_BREAK = 3; // Number of exercises shown per break
+const EXERCISES_PER_BREAK = 2; // Number of exercises shown per break
 
 // Define a default set of exercises
 let catalog = {
@@ -825,19 +825,21 @@ function displayExercise() {
 
       exerciseContent += '<div class="exercise-item">';
       exerciseContent += `<div class="exercise-sequence">${sequenceNumber} / ${allKeys.length}</div>`;
-      exerciseContent += `<div class="exercise-header">
-        <div class="exercise-name">${exercise.name}</div>
-        <button class="info-trigger" data-id="${exercise.id}">?</button>
-        <div id="tooltip-${exercise.id}" class="description-tooltip">
-          ${exercise.reps || exercise.type ? `
-            <div class="exercise-stats">
-              <span class="exercise-meta">${repsDisplay}</span>
-              <span class="multiplier">${multiplierStr}</span>
-            </div>
-          ` : ''}
-          <div class="exercise-description">${exercise.description}</div>
-        </div>
-      </div>`;
+      exerciseContent += `<div class="exercise-name">${exercise.name}</div>`;
+
+      // Show stats directly
+      if (exercise.reps || exercise.type) {
+        exerciseContent += `<div class="exercise-stats-inline">
+          <span class="exercise-meta">${repsDisplay}</span>
+          <span class="multiplier">${multiplierStr}</span>
+        </div>`;
+      }
+
+      // Show description directly
+      if (exercise.description) {
+        exerciseContent += `<div class="exercise-description-inline">${exercise.description}</div>`;
+      }
+
       exerciseContent += '</div>'; // .exercise-item
     });
     exerciseContent += '</div>'; // .exercise-column-left
