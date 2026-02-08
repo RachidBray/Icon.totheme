@@ -49,6 +49,7 @@ if (!document.querySelector('.stats-button')) {
 }
 
 const EXERCISES_PER_BREAK = 2; // Number of exercises shown per break
+const PLACEHOLDER_IMAGE = 'https://cdn-icons-png.flaticon.com/512/983/983553.png';
 
 // Define a default set of exercises
 let catalog = {
@@ -813,10 +814,10 @@ function displayExercise() {
   if (currentGroup.length === 0) {
     exerciseContent += '<div class="exercise-empty">No exercises configured. Add some in settings.</div>';
   } else {
-    // Two-column layout: exercises left, hadith right
+    // Two-column layout: exercises left (with images), hadith right
     exerciseContent += '<div class="exercise-layout">';
 
-    // Left column: exercises
+    // Left column: exercises with embedded images
     exerciseContent += '<div class="exercise-column-left">';
     currentGroup.forEach((exercise, index) => {
       const sequenceNumber = currentExerciseIndex * EXERCISES_PER_BREAK + index + 1;
@@ -824,22 +825,35 @@ function displayExercise() {
       const repsDisplay = (exercise.reps === undefined || exercise.reps === null) ? '' : exercise.reps;
 
       exerciseContent += '<div class="exercise-item">';
-      exerciseContent += `<div class="exercise-sequence">${sequenceNumber} / ${allKeys.length}</div>`;
-      exerciseContent += `<div class="exercise-name">${exercise.name}</div>`;
 
-      // Show stats directly
+
+
+      // ... inside displayExercise ...
+      // Image on the left side of the card
+      exerciseContent += '<div class="exercise-img-wrapper">';
+      const imgSrc = exercise.image2 || PLACEHOLDER_IMAGE;
+      exerciseContent += `<img src="${imgSrc}" alt="${exercise.name}" class="exercise-img">`;
+      exerciseContent += '</div>';
+      exerciseContent += '<div class="exercise-content-wrapper">';
+      exerciseContent += `<div class="exercise-sequence">${sequenceNumber} / ${allKeys.length}</div>`;
+
+      // Name + Stats inline row
+      exerciseContent += '<div class="exercise-title-row">';
+      exerciseContent += `<div class="exercise-name">${exercise.name}</div>`;
       if (exercise.reps || exercise.type) {
         exerciseContent += `<div class="exercise-stats-inline">
           <span class="exercise-meta">${repsDisplay}</span>
           <span class="multiplier">${multiplierStr}</span>
         </div>`;
       }
+      exerciseContent += '</div>'; // .exercise-title-row
 
       // Show description directly
       if (exercise.description) {
         exerciseContent += `<div class="exercise-description-inline">${exercise.description}</div>`;
       }
 
+      exerciseContent += '</div>'; // .exercise-content-wrapper
       exerciseContent += '</div>'; // .exercise-item
     });
     exerciseContent += '</div>'; // .exercise-column-left

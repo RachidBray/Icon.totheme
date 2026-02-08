@@ -122,20 +122,20 @@ body.loaded {
 
 .exercise-layout {
     display: flex;
-    gap: 30px;
+    gap: 20px;
     width: 100%;
-    padding: 40px 30px;
+    padding: 30px;
 }
 
 .exercise-column-left {
-    flex: 1;
+    flex: 2;
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
 .exercise-column-right {
-    flex: 1;
+    flex: 2;
     display: flex;
     align-items: stretch;
 }
@@ -145,14 +145,64 @@ body.loaded {
     margin-bottom: 0;
 }
 
+/* Exercise Title Row - Name + Stats inline */
+.exercise-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.exercise-title-row .exercise-name {
+    margin-bottom: 0;
+    font-size: 1.2rem;
+}
+
+/* Exercise Item - horizontal layout with image left, content right */
 .exercise-item {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid #2a2a2a;
     border-radius: 16px;
-    padding: 20px;
+    padding: 16px;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+/* Image wrapper on the left */
+.exercise-img-wrapper {
+    flex-shrink: 0;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.exercise-img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.exercise-img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed #444;
+    border-radius: 12px;
+}
+
+/* Content wrapper on the right */
+.exercise-content-wrapper {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+    text-align: left;
+    align-items: flex-start;
 }
 
 /* Inline Stats Display */
@@ -160,29 +210,30 @@ body.loaded {
     display: flex;
     align-items: baseline;
     gap: 8px;
-    padding: 8px 12px;
+    padding: 6px 10px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: 6px;
     width: fit-content;
 }
 
 .exercise-stats-inline .exercise-meta {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 800;
     color: #FFF;
 }
 
 .exercise-stats-inline .multiplier {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #888;
     text-transform: uppercase;
 }
 
 /* Inline Description Display */
 .exercise-description-inline {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
-    line-height: 1.5;
+    line-height: 1.6;
+    text-align: left;
 }
 
 .exercise-sequence {
@@ -217,9 +268,9 @@ body.loaded {
     display: block;
     text-align: right;
     direction: rtl;
-    font-family: 'Amiri', 'Georgia', serif;
-    font-size: 1.25rem;
-    line-height: 1.8;
+    font-family: 'Amiri', 'Traditional Arabic', serif;
+    font-size: 1.8rem;
+    line-height: 2;
     color: #e0e0e0;
     box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
