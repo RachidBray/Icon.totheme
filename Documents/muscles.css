@@ -13,10 +13,10 @@
     --accent-glow: rgba(255, 255, 255, 0.1);
 
     /* --- Functional Colors --- */
-    --btn-complete: #6366f1;
-    /* Indigo button */
+    --btn-complete: #2ecc71;
+    /* Green button */
     --btn-complete-text: #FFFFFF;
-    --btn-complete-hover: #4f46e5;
+    --btn-complete-hover: #27ae60;
 
     --btn-action: #000000;
     /* Black button */
@@ -94,8 +94,8 @@ body.loaded {
     font-weight: 900;
     letter-spacing: 1px;
     line-height: 1;
-    margin-top: 25px;
-    margin-bottom: 40px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     color: var(--text-primary);
     text-transform: uppercase;
 }
@@ -137,7 +137,8 @@ body.loaded {
 .exercise-column-right {
     flex: 2;
     display: flex;
-    align-items: stretch;
+    position: relative;
+    /* Context for absolute child */
 }
 
 
@@ -254,10 +255,15 @@ body.loaded {
 }
 
 /* --- Hadith Display --- */
+/* --- Hadith Display --- */
 .exercise-hadith {
+    /* Absolute positioning to match parent height exactly */
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 500px;
-    height: 420px;
+    height: 100%;
+
     border-radius: 20px;
     background: linear-gradient(135deg, #1e1e1e, #111);
     border: 1px solid #333;
@@ -273,7 +279,8 @@ body.loaded {
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #444 transparent;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    /* Remove margin as it breaks absolute height */
 }
 
 .exercise-hadith::-webkit-scrollbar {
@@ -421,32 +428,47 @@ body.loaded {
     padding: 40px 20px;
 }
 
-.exercise-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* New Progress Bar (Below Title) */
+.progress-status-bar {
     width: 100%;
-    margin-bottom: 30px;
-    padding: 15px 25px;
-    background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px 12px 0 0;
-}
-
-.nav-actions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 0 20px;
 }
 
 .progress-indicator {
-    font-size: 0.85rem;
-    color: #666;
-    font-weight: 700;
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 0;
+    letter-spacing: 1px;
 }
+
+.status-separator {
+    margin: 0 8px;
+    color: #444;
+}
+
+/* New Controls Bar (Key Layout Change) */
+.exercise-controls-bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+    padding: 10px 20px;
+}
+
+/* Position Prev button to far left (start of grid cell) */
+.prev-button {
+    justify-self: start;
+}
+
+/* Position Next button to far right (end of grid cell) */
+.next-button {
+    justify-self: end;
+}
+
 
 /* --- Action Buttons Container Removed --- */
 
@@ -488,9 +510,18 @@ body.loaded {
     background: var(--btn-complete);
     color: var(--btn-complete-text);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 10px 25px;
-    font-size: 1rem;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    min-width: 0;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    line-height: 1;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
 }
 
 .done-button:hover {
@@ -500,8 +531,12 @@ body.loaded {
 }
 
 .done-button.completed {
-    background: #27ae60;
-    border-color: #2ecc71;
+    background: #e74c3c;
+    border-color: #c0392b;
+}
+
+.done-button.completed:hover {
+    background: #c0392b;
 }
 
 /* Secondary Buttons */

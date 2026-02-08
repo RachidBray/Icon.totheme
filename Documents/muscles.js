@@ -797,17 +797,24 @@ function displayExercise() {
   const iscompletedInMap = firstKey && exerciseCompleted[firstKey];
   const isGroupCompleted = exerciseHistory.some(entry => entry.groupIndex == currentExerciseIndex) || iscompletedInMap;
 
-  const doneBtnText = isGroupCompleted ? 'تراجع' : 'تم الإنجاز';
+  const doneBtnText = isGroupCompleted ? '✗' : '✓';
   const doneBtnClass = isGroupCompleted ? 'action-button done-button completed' : 'action-button done-button';
+  const doneBtnTitle = isGroupCompleted ? 'غير مكتمل' : 'مكتمل';
+
+  const stats = getWeekStats();
+  const currentGroupCount = stats.groupCounts[currentExerciseIndex] || 0;
+
+  // Update progress indicator outside the exercise content loop
+  const statusLine = document.getElementById('status-line');
+  if (statusLine) {
+    statusLine.innerHTML = `<div class="progress-indicator">مجموعة ${currentExerciseIndex + 1} من ${totalGroups} <span class="status-separator">•</span> مكتمل ${currentGroupCount} مرات هذا الأسبوع</div>`;
+  }
 
   exerciseContent += `
-    <div class="exercise-top-bar">
-      <div class="progress-indicator">مجموعة ${currentExerciseIndex + 1} من ${totalGroups}</div>
-      <div class="nav-actions">
-        <button id="prev-btn" class="action-button prev-button" title="السابق">السابق</button>
-        <button id="done-btn" class="${doneBtnClass}" title="${doneBtnText}">${doneBtnText}</button>
-        <button id="next-btn" class="action-button next-button" title="التالي">التالي</button>
-      </div>
+    <div class="exercise-controls-bar">
+      <button id="prev-btn" class="action-button prev-button" title="السابق">السابق</button>
+      <button id="done-btn" class="${doneBtnClass}" title="${doneBtnTitle}">${doneBtnText}</button>
+      <button id="next-btn" class="action-button next-button" title="التالي">التالي</button>
     </div>
   `;
 
@@ -906,9 +913,9 @@ function addActionButtonListeners() {
       if (isCompleted) {
         // UNDO Logic
         if (removeLastCompletion()) {
-          newDoneBtn.innerHTML = 'تم الإنجاز';
+          newDoneBtn.innerHTML = '✓';
           newDoneBtn.classList.remove('completed');
-          newDoneBtn.title = 'تم الإنجاز';
+          newDoneBtn.title = 'مكتمل';
         }
       } else {
         // DONE Logic
@@ -917,14 +924,14 @@ function addActionButtonListeners() {
 
         if (recordCompletion()) {
           setTimeout(() => {
-            newDoneBtn.innerHTML = 'تراجع';
+            newDoneBtn.innerHTML = '✗';
             newDoneBtn.classList.add('completed');
             newDoneBtn.disabled = false;
-            newDoneBtn.title = 'تراجع';
+            newDoneBtn.title = 'غير مكتمل';
           }, 500);
         } else {
           newDoneBtn.disabled = false;
-          newDoneBtn.innerHTML = 'تم الإنجاز';
+          newDoneBtn.innerHTML = '✓';
         }
       }
     });
