@@ -1,13 +1,14 @@
 // grab our dom elements
 let displayBox = document.querySelector('.current-exercise'),
   catalogBox = document.querySelector('.catalog-box'),
+  statsBox = document.querySelector('.stats-box'),
   resetButton = document.querySelector('.reset');
 
-// Hide catalog box by default (will show as popup)
+// Hide catalog and stats boxes by default
 catalogBox.style.display = 'none';
+statsBox.style.display = 'none';
 
 // Add a settings button to trigger the popup
-// Check if button already exists to avoid duplication on reload
 if (!document.querySelector('.settings-button')) {
   let settingsButton = document.createElement('button');
   settingsButton.innerHTML = '⚙';
@@ -21,6 +22,24 @@ if (!document.querySelector('.settings-button')) {
       catalogBox.style.display = 'block'; // CSS handles positioning
     } else {
       catalogBox.style.display = 'none';
+    }
+  });
+}
+
+// Add a stats button
+if (!document.querySelector('.stats-button')) {
+  let statsButton = document.createElement('button');
+  statsButton.innerHTML = '📊';
+  statsButton.className = 'stats-button';
+  statsButton.title = 'View Weekly Stats';
+  document.querySelector('.cell').appendChild(statsButton);
+
+  statsButton.addEventListener('click', function () {
+    if (statsBox.style.display === 'none') {
+      displayStats();
+      statsBox.style.display = 'block';
+    } else {
+      statsBox.style.display = 'none';
     }
   });
 }
@@ -121,6 +140,7 @@ let localCatalog = { ...catalog };
 
 let currentExerciseIndex = 0; // Tracks the current exercise group index
 let exerciseCompleted = {};
+let exerciseHistory = []; // Tracks completions with timestamps
 
 // Robust storage helper with multiple fallbacks for better persistence
 const AppStorage = {
@@ -323,7 +343,8 @@ async function saveState() {
   const state = {
     catalog: localCatalog,
     index: currentExerciseIndex,
-    completed: exerciseCompleted
+    completed: exerciseCompleted,
+    history: exerciseHistory
   };
   await AppStorage.save(state);
 }
@@ -334,6 +355,7 @@ async function loadState() {
     localCatalog = savedState.catalog || localCatalog;
     currentExerciseIndex = savedState.index || 0;
     exerciseCompleted = savedState.completed || {};
+    exerciseHistory = savedState.history || [];
 
     // Check if the current catalog matches the default catalog structure
     // If we've added new default exercises, we should merge them in
@@ -376,7 +398,6 @@ function validateCurrentExercise() {
     saveState();
   }
 }
-
 if (resetButton) {
   resetButton.addEventListener('click', function () {
     localCatalog = { ...catalog };
@@ -386,6 +407,75 @@ if (resetButton) {
     displayExercise();
     displayCatalog();
   });
+}
+
+function getWeekStats() {
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  // Set to Monday
+  const day = startOfWeek.getDay();
+  const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+  startOfWeek.setDate(diff);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const stats = {
+    totalCompletions: 0,
+    groupCounts: {}
+  };
+
+  exerciseHistory.forEach(entry => {
+    if (entry.timestamp >= startOfWeek.getTime()) {
+      stats.totalCompletions++;
+      stats.groupCounts[entry.groupIndex] = (stats.groupCounts[entry.groupIndex] || 0) + 1;
+    }
+  });
+
+  return stats;
+}
+
+function displayStats() {
+  const statsContent = statsBox.querySelector('.stats-content');
+  const stats = getWeekStats();
+  const totalGroups = getTotalGroups();
+  const allKeys = getCatalogKeys();
+
+  // Clear existing content
+  statsContent.innerHTML = '';
+
+  // Add close button if missing
+  if (!statsBox.querySelector('.close-button')) {
+    let closeButton = document.createElement('button');
+    closeButton.innerHTML = '×';
+    closeButton.className = 'close-button';
+    closeButton.addEventListener('click', function () {
+      statsBox.style.display = 'none';
+    });
+    statsBox.querySelector('.stats-header').appendChild(closeButton);
+  }
+
+  let html = `
+    <div class="stats-summary">
+      <div class="stats-hero-count">${stats.totalCompletions}</div>
+      <div class="stats-hero-label">مجموع المجموعات المكتملة هذا الأسبوع</div>
+    </div>
+    <div class="stats-breakdown">
+  `;
+
+  for (let i = 0; i < totalGroups; i++) {
+    const count = stats.groupCounts[i] || 0;
+    const startIndex = i * EXERCISES_PER_BREAK;
+    const firstExerciseName = localCatalog[allKeys[startIndex]]?.name || 'Unknown';
+
+    html += `
+      <div class="stats-row">
+        <div class="stats-row-name">المجموعة ${i + 1}: ${firstExerciseName}</div>
+        <div class="stats-row-count">${count}</div>
+      </div>
+    `;
+  }
+
+  html += '</div>';
+  statsContent.innerHTML = html;
 }
 
 // Create HTML elements for catalog
@@ -511,6 +601,12 @@ function completeCurrentExercise() {
     if (!key) break;
     exerciseCompleted[key] = true;
   }
+
+  // Record completion history
+  exerciseHistory.push({
+    timestamp: Date.now(),
+    groupIndex: currentExerciseIndex
+  });
 
   currentExerciseIndex++;
   const totalGroups = getTotalGroups();
