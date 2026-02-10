@@ -884,13 +884,60 @@ function displayExercise() {
   addActionButtonListeners();
 }
 
+/* --- Custom Modal Logic --- */
+function showConfirm(onConfirm, onCancel) {
+  const modal = document.getElementById('confirm-modal');
+  if (!modal) return;
+
+  // Show
+  modal.classList.add('active');
+
+  const okBtn = document.getElementById('modal-ok');
+  // Simple onclick handler to match simple use case and avoid stacking
+  okBtn.onclick = function () {
+    closeModal();
+    if (onConfirm) onConfirm();
+  };
+
+  const cancelBtn = document.getElementById('modal-cancel');
+  cancelBtn.onclick = function () {
+    closeModal();
+    if (onCancel) onCancel();
+  };
+}
+
+function closeModal() {
+  const modal = document.getElementById('confirm-modal');
+  if (modal) modal.classList.remove('active');
+}
+
 function addActionButtonListeners() {
   const nextBtn = document.getElementById('next-btn');
   if (nextBtn) {
     const newNextBtn = nextBtn.cloneNode(true);
     nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
     newNextBtn.addEventListener('click', function () {
-      nextExerciseGroup();
+      // Check if current group is completed
+      const allKeys = getCatalogKeys();
+      const startIndex = currentExerciseIndex * EXERCISES_PER_BREAK;
+      const firstKey = allKeys[startIndex];
+      const iscompletedInMap = firstKey && exerciseCompleted[firstKey];
+      const isGroupCompleted = exerciseHistory.some(entry => entry.groupIndex == currentExerciseIndex) || iscompletedInMap;
+
+      if (!isGroupCompleted) {
+        // Show custom modal reminder
+        showConfirm(
+          function () { // onConfirm
+            recordCompletion();
+            nextExerciseGroup();
+          },
+          function () { // onCancel
+            nextExerciseGroup(); // Proceed without marking
+          }
+        );
+      } else {
+        nextExerciseGroup();
+      }
     });
   }
 
